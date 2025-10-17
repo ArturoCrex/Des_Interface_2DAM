@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporizador Pomodoro</title>
+    <!-- Carga de Tailwind CSS para un diseño moderno y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configuración de la fuente Inter (recomendada para legibilidad) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        /* === 1. COLORES BASE & VARIABLES (Contraste Alto) === */
+        :root {
+            /* General UI (MODO CLARO - Alto Contraste) */
+            --bg-body: #f0f0f5; 
+            --bg-card: #ffffff; 
+            --text-base: #111827; 
+            --text-secondary: #4b5563; 
+            --border-color: #e0e0ea; 
+            --color-accent: #ff7f00; /* Naranja fuego */
+            
+            /* Dynamic Phase Colors */
+            --phase-bg: var(--color-work-light); 
+            --phase-text: var(--color-work-dark); 
+
+            /* Palette for Dynamic Phases (COLORES VIBRANTES) */
+            --color-work-light: #fee2e2;    
+            --color-work-dark: #b91c1c;     
+            --color-short-break-light: #e0f2fe; 
+            --color-short-break-dark: #0284c7;  
+            --color-long-break-light: #f3e8ff;  
+            --color-long-break-dark: #7e22ce;   
+        }
+        
+        /* === 2. MODO NOCHE (.dark-mode) OVERRIDES (Contraste Dramático) === */
+        .dark-mode {
+            --bg-body: #0a0a0a; 
+            --bg-card: #1f2937; 
+            --text-base: #ffffff; 
+            --text-secondary: #9ca3af; 
+            --border-color: #374151; 
+            
+            /* Adaptación de colores de fase para BRILAR sobre fondo oscuro */
+            --color-work-light: #450a0a;    
+            --color-work-dark: #fca5a5;     
+            --color-short-break-light: #083344; 
+            --color-short-break-dark: #67e8f9;  
+            --color-long-break-light: #31184a;  
+            --color-long-break-dark: #d8b4fe;   
+        }
+
+        /* === 3. TEMAS (Colores de acento más saturados) === */
+        .theme-sunrise { --color-accent: #ff7f00; }
+        .theme-forest { --color-accent: #059669; }
+        .theme-royal { --color-accent: #4338ca; }
+        .theme-mint { --color-accent: #0ea5e9; }
+        .theme-ruby { --color-accent: #e11d48; }
+        .theme-gold { --color-accent: #d97706; }
+        
+        /* === 4. ESTILOS GLOBALES Y DE COMPONENTES === */
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            background-color: var(--bg-body);
+            color: var(--text-base);
+        }
+        .app-card {
+            background-color: var(--bg-card);
+            color: var(--text-base);
+            border: 1px solid var(--border-color);
+        }
+        .text-work-phase {
+            color: var(--phase-text); 
+        }
+        
+        /* Botones de control dinámicos */
+        #start-button {
+            background-color: var(--color-accent);
+        }
+        #start-button:hover {
+            background-color: color-mix(in srgb, var(--color-accent) 80%, black);
+        }
+        .phase-selector.active-phase {
+            color: var(--phase-text);
+            background-color: var(--phase-bg);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        .phase-selector:not(.active-phase) {
+            background-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+        #stop-button {
+            background-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        /* Switch de Modo Oscuro */
+        .switch .slider { transition: .4s; }
+        .switch input:checked + .slider { background-color: var(--color-accent); }
+        .switch input:checked + .slider:before { transform: translateX(20px); }
+        .switch .slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px; 
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        .theme-btn.active-theme {
+            box-shadow: 0 0 0 3px var(--bg-card), 0 0 0 5px var(--color-accent);
+        }
+        
+        /* Estilos del Jukebox */
+        .track-item.active-track {
+            background-color: var(--phase-bg);
+            color: var(--phase-text);
+            font-weight: 600;
+            border-left: 4px solid var(--color-accent);
+        }
+        
+        /* Estilos de botones de control multimedia */
+        .media-btn {
+            color: var(--color-accent);
+            background-color: var(--bg-body);
+        }
+        .media-btn:hover {
+            background-color: var(--border-color);
+        }
+        .media-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Contenedor responsivo para el iframe de YouTube */
+        .youtube-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            border-radius: 0.75rem; /* rounded-xl */
+        }
+        .youtube-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* === 5. ESTILOS DEL NUEVO PANEL DE UTILIDADES Y NOTIFICACIONES === */
+        #utility-panel.panel-open {
+            transform: translateX(0);
+        }
+        #toast-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+    </style>
+</head>
+
+<body class="theme-sunrise min-h-screen bg-gray-100 dark:bg-black">
+
+    <main class="flex flex-col lg:flex-row items-start justify-center w-full min-h-screen p-4 gap-6">
+
+        <!-- Columna Izquierda: Controles -->
+        <div class="w-full max-w-md flex flex-col gap-6 lg:sticky lg:top-4">
+            <!-- Personalización Visual -->
+            <div id="visual-settings-panel" class="w-full p-6 rounded-3xl shadow-xl transition-all duration-500 app-card space-y-4">
+                <h2 class="text-xl font-bold text-center mb-2 border-b pb-2" style="border-color: var(--border-color);">Personalización Visual</h2>
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-medium">Modo Oscuro (Noche)</span>
+                    <label class="switch relative inline-block w-12 h-6">
+                        <input type="checkbox" id="dark-mode-toggle" class="opacity-0 w-0 h-0">
+                        <span class="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition-colors duration-300"></span>
+                    </label>
+                </div>
+                <div>
+                    <h3 class="text-md font-semibold mb-2">Temas Predefinidos (Color de Acento)</h3>
+                    <div id="theme-selector" class="grid grid-cols-3 gap-3">
+                        <button data-theme="sunrise" class="theme-btn active-theme h-10 rounded-lg shadow transition-transform transform hover:scale-105" style="background-color: #ff7f00;"></button>
+                        <button data-theme="forest" class="theme-btn h-10 rounded-lg shadow transition-transform transform hover:scale-105" style="background-color: #059669;"></button>
+                        <button data-theme="royal" class="theme-btn h-10 rounded-lg shadow transition-transform transform hover:scale-105" style="background-color: #4338ca;"></button>
+                        <button data-theme="mint" class="theme-btn h-10 rounded-lg shadow transition-transform transform hover:scale-105" style="background-color: #0ea5e9;"></button>
+                        <button data-theme="ruby" class="theme-btn h-10 rounded-lg shadow transition-transform transform hover:scale-105" style="background-color: #e11d48;"></button>
+                        <button data-theme="gold" data-theme-default="true" class="theme-btn h-10 rounded-lg shadow transition-transform transform hover:scale-105" style="background-color: #d97706;"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jukebox -->
+            <div id="jukebox-panel" class="w-full p-6 rounded-3xl shadow-xl transition-all duration-500 app-card space-y-4">
+                <h2 class="text-xl font-bold text-center mb-2 border-b pb-2" style="border-color: var(--border-color);">Jukebox (Música/Video)</h2>
+                
+                <div id="youtube-player-container" class="youtube-container hidden"></div>
+
+                <div id="html5-controls" class="flex items-center justify-between space-x-3 p-3 rounded-xl app-card" style="border: none;">
+                    <div class="flex-grow min-w-0">
+                        <p class="text-sm font-semibold truncate" id="current-track-name">No hay pista seleccionada</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="prev-track-btn" class="media-btn p-2 rounded-full transform active:scale-90" disabled>⏮️</button>
+                        <button id="play-pause-btn" class="media-btn p-3 rounded-full text-xl transform active:scale-90" disabled>▶️</button>
+                        <button id="next-track-btn" class="media-btn p-2 rounded-full transform active:scale-90" disabled>⏭️</button>
+                    </div>
+                    <div class="flex items-center space-x-2 w-20">
+                        <span class="text-xl">🔈</span>
+                        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" class="w-full" />
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-md font-semibold mt-4">Pistas Cargadas (MP3/WAV o YouTube)</h3>
+                    <ul id="track-list" class="space-y-1 h-32 overflow-y-auto p-2 rounded-lg mt-2" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                        <li class="p-2 text-sm text-center" style="color: var(--text-secondary);">Carga tus pistas o añade enlaces.</li>
+                    </ul>
+                </div>
+
+                <div class="border-t pt-4 space-y-4" style="border-color: var(--border-color);">
+                    <label for="file-upload" class="w-full block text-center py-2 rounded-lg cursor-pointer font-medium text-white transition-colors duration-200" style="background-color: var(--color-accent);">
+                        Cargar Archivo de Audio
+                    </label>
+                    <input type="file" id="file-upload" accept=".mp3,.wav" class="hidden">
+
+                    <div class="flex space-x-2">
+                        <input type="text" id="youtube-input" placeholder="Añadir enlace de YouTube" class="flex-grow p-2 border rounded-lg" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-base);">
+                        <button id="add-youtube-btn" class="py-2 px-4 rounded-lg font-medium text-white" style="background-color: var(--color-accent);">Añadir</button>
+                    </div>
+                    <p id="audio-error-message" class="text-sm text-red-500 text-center mt-2 hidden"></p>
+                </div>
+                
+                <audio id="audio-player" class="hidden"></audio>
+            </div>
+        </div>
+
+
+        <!-- Columna Central: Pomodoro -->
+        <div id="pomodoro-app" class="w-full max-w-md p-6 md:p-10 rounded-3xl shadow-xl transition-all duration-500 relative app-card order-first lg:order-none">
+            <div class="absolute top-4 right-4 flex space-x-2">
+                <button id="settings-button" class="p-2 transition-colors duration-200 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.9.554 1.956.326 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                </button>
+                <button id="utility-panel-button" class="p-2 transition-colors duration-200 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                </button>
+            </div>
+            <h1 class="text-3xl font-bold text-center mb-6">Temporizador Pomodoro</h1>
+            <p id="phase-title" class="text-xl font-semibold text-center mb-8 text-work-phase">Fase Actual: Trabajo</p>
+            <div class="text-center mb-10">
+                <span id="time-display" class="text-7xl md:text-8xl font-extrabold tracking-tighter">25:00</span>
+            </div>
+            <div class="flex justify-center space-x-3 mb-8">
+                <button id="select-work" data-phase="work" class="phase-selector active-phase p-3 rounded-xl text-sm font-medium transition-all duration-300">Trabajo (<span id="duration-work">25</span>m)</button>
+                <button id="select-short-break" data-phase="shortBreak" class="phase-selector p-3 rounded-xl text-sm font-medium transition-all duration-300">Descanso Corto (<span id="duration-shortBreak">5</span>m)</button>
+                <button id="select-long-break" data-phase="longBreak" class="phase-selector p-3 rounded-xl text-sm font-medium transition-all duration-300">Descanso Largo (<span id="duration-longBreak">15</span>m)</button>
+            </div>
+            <div class="flex flex-col space-y-4">
+                <button id="start-button" class="text-white font-bold py-4 rounded-xl text-xl shadow-lg transition-all duration-300 transform active:scale-95">Empezar</button>
+                <button id="stop-button" class="font-medium py-3 rounded-xl text-lg transition-all duration-300 transform active:scale-95 opacity-50">Terminar / Reiniciar</button>
+            </div>
+            <div class="text-center mt-6 text-sm" style="color: var(--text-secondary);">
+                <p>Ciclos Pomodoro completados: <span id="cycle-count">0</span></p>
+                <p class="mt-2 text-xs">Usuario ID: <span id="user-id-display">Cargando...</span></p>
+            </div>
+        </div>
+        
+    </main>
+
+    <!-- Modal de Opciones (Configuración) -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="w-full max-w-sm rounded-3xl p-6 shadow-2xl app-card">
+            <h2 class="text-2xl font-bold mb-6 border-b pb-3" style="border-color: var(--border-color);">Opciones de Temporizador</h2>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <label for="input-work" class="font-medium">Duración de Trabajo (min):</label>
+                    <input type="number" id="input-work" min="1" max="60" value="25" class="w-20 p-2 border rounded-lg text-center focus:ring-2 focus:ring-opacity-50" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-base);">
+                </div>
+                <div class="flex justify-between items-center">
+                    <label for="input-shortBreak" class="font-medium">Descanso Corto (min):</label>
+                    <input type="number" id="input-shortBreak" min="1" max="30" value="5" class="w-20 p-2 border rounded-lg text-center focus:ring-2 focus:ring-opacity-50" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-base);">
+                </div>
+                <div class="flex justify-between items-center">
+                    <label for="input-longBreak" class="font-medium">Descanso Largo (min):</label>
+                    <input type="number" id="input-longBreak" min="1" max="60" value="15" class="w-20 p-2 border rounded-lg text-center focus:ring-2 focus:ring-opacity-50" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-base);">
+                </div>
+            </div>
+            <button id="save-settings-button" class="mt-8 w-full text-white font-bold py-3 rounded-xl transition-all duration-300 transform active:scale-95" style="background-color: var(--color-accent);">
+                Guardar Cambios
+            </button>
+
+            <!-- Gestión de Perfil -->
+            <div class="border-t mt-6 pt-6" style="border-color: var(--border-color);">
+                <h3 class="text-lg font-bold mb-4 text-center">Gestión de Perfil</h3>
+                <div class="space-y-3">
+                    <button id="export-profile-button" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-xl transition-all duration-300">
+                        Guardar Perfil (.json)
+                    </button>
+                    <button id="import-profile-button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl transition-all duration-300">
+                        Cargar Perfil (.json)
+                    </button>
+                    <input type="file" id="import-file-input" class="hidden" accept=".json">
+                </div>
+                <p class="text-xs text-center mt-2" style="color: var(--text-secondary);">
+                    Nota: Solo se guardarán las pistas de YouTube en el perfil.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel de Utilidades (Notas y Recordatorios) -->
+    <div id="utility-panel" class="fixed top-0 right-0 h-full w-full max-w-sm transform translate-x-full transition-transform duration-300 ease-in-out z-40 p-6 flex flex-col app-card" style="border-left: 1px solid var(--border-color); border-right: none; border-top: none; border-bottom: none;">
+        <div class="flex justify-between items-center border-b pb-3 mb-4" style="border-color: var(--border-color);">
+            <h2 class="text-xl font-bold">Notas y Recordatorios</h2>
+            <button id="close-utility-panel-button" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        
+        <div class="mb-6 flex-shrink-0">
+            <h3 class="font-semibold mb-2">Notas Rápidas</h3>
+            <textarea id="notes-textarea" class="w-full h-32 p-2 border rounded-lg focus:ring-2" placeholder="Escribe tus notas aquí..." style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-base); resize: vertical;"></textarea>
+            <button id="save-notes-button" class="mt-2 w-full text-white font-bold py-2 rounded-xl transition-all duration-300" style="background-color: var(--color-accent);">Guardar Notas</button>
+        </div>
+        
+        <div class="flex flex-col flex-grow min-h-0">
+            <h3 class="font-semibold mb-2 flex-shrink-0">Recordatorios</h3>
+            <div class="space-y-2 mb-4 flex-shrink-0">
+                <input type="text" id="reminder-text" placeholder="Descripción del recordatorio" class="w-full p-2 border rounded-lg" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-base);">
+                <div class="flex space-x-2">
+                    <input type="date" id="reminder-date" class="w-1/2 p-2 border rounded-lg" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-base); color-scheme: light dark;">
+                    <input type="time" id="reminder-time" class="w-1/2 p-2 border rounded-lg" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-base); color-scheme: light dark;">
+                </div>
+                <button id="add-reminder-button" class="w-full text-white font-bold py-2 rounded-xl transition-all duration-300" style="background-color: var(--color-accent);">Añadir Recordatorio</button>
+            </div>
+            <ul id="reminders-list" class="space-y-2 overflow-y-auto flex-grow">
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Notificación Toast -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 bg-gray-800 text-white py-3 px-6 rounded-lg shadow-xl transform translate-y-20 opacity-0 transition-all duration-500 ease-in-out">
+        <p id="toast-message">Mensaje de notificación.</p>
+    </div>
+
+
+    <script type="module">
+        // === 0. CONFIGURACIÓN FIREBASE & GLOBALES ===
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // setLogLevel('Debug');
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-pomodoro-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth;
+        let userId = null;
+        const FIREBASE_COLLECTION_PATH = `/artifacts/${appId}/users/`;
+
+
+        // === 1. VARIABLES DE ESTADO DEL POMODORO ===
+        let PHASES = {
+            'work': { duration: 1500, label: 'Trabajo', lightVar: '--color-work-light', darkVar: '--color-work-dark' }, 
+            'shortBreak': { duration: 300, label: 'Descanso Corto', lightVar: '--color-short-break-light', darkVar: '--color-short-break-dark' }, 
+            'longBreak': { duration: 900, label: 'Descanso Largo', lightVar: '--color-long-break-light', darkVar: '--color-long-break-dark' }, 
+        };
+
+        const CYCLE_SEQUENCE = ['work', 'shortBreak', 'work', 'shortBreak', 'work', 'longBreak'];
+        let currentPhaseKey = 'work';
+        let currentPhaseIndex = 0;
+        let timeRemaining = PHASES[currentPhaseKey].duration;
+        let isRunning = false;
+        let timerInterval = null;
+        let completedCycles = 0;
+        
+        let currentTheme = 'sunrise'; 
+        let isDarkMode = false;      
+
+        // === 2. VARIABLES DE ESTADO DEL JUKEBOX Y UTILIDADES ===
+        let tracks = [];
+        let currentTrackIndex = -1;
+        let isPlaying = false;
+        let currentTrackType = 'none';
+        let userNotes = '';
+        let userReminders = [];
+
+
+        // === 3. REFERENCIAS DEL DOM ===
+        const timeDisplay = document.getElementById('time-display');
+        const phaseTitle = document.getElementById('phase-title');
+        const startButton = document.getElementById('start-button');
+        const stopButton = document.getElementById('stop-button');
+        const phaseSelectors = document.querySelectorAll('.phase-selector');
+        const body = document.body;
+        const cycleCountDisplay = document.getElementById('cycle-count');
+        const userIdDisplay = document.getElementById('user-id-display');
+        
+        const settingsModal = document.getElementById('settings-modal');
+        const settingsButton = document.getElementById('settings-button');
+        const saveSettingsButton = document.getElementById('save-settings-button');
+        const inputWork = document.getElementById('input-work');
+        const inputShortBreak = document.getElementById('input-shortBreak');
+        const inputLongBreak = document.getElementById('input-longBreak');
+        const durationDisplayWork = document.getElementById('duration-work');
+        const durationDisplayShortBreak = document.getElementById('duration-shortBreak');
+        const durationDisplayLongBreak = document.getElementById('duration-longBreak');
+        
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const themeSelector = document.getElementById('theme-selector');
+
+        const audioPlayer = document.getElementById('audio-player');
+        const trackListElement = document.getElementById('track-list');
+        const fileUploadInput = document.getElementById('file-upload');
+        const youtubeInput = document.getElementById('youtube-input');
+        const addYoutubeBtn = document.getElementById('add-youtube-btn');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const prevTrackBtn = document.getElementById('prev-track-btn');
+        const nextTrackBtn = document.getElementById('next-track-btn');
+        const volumeSlider = document.getElementById('volume-slider');
+        const currentTrackNameDisplay = document.getElementById('current-track-name');
+        const audioErrorDisplay = document.getElementById('audio-error-message');
+        const youtubePlayerContainer = document.getElementById('youtube-player-container');
+        const html5Controls = document.getElementById('html5-controls');
+
+        const utilityPanel = document.getElementById('utility-panel');
+        const utilityPanelButton = document.getElementById('utility-panel-button');
+        const closeUtilityPanelButton = document.getElementById('close-utility-panel-button');
+        const notesTextarea = document.getElementById('notes-textarea');
+        const saveNotesButton = document.getElementById('save-notes-button');
+        const reminderTextInput = document.getElementById('reminder-text');
+        const reminderDateInput = document.getElementById('reminder-date');
+        const reminderTimeInput = document.getElementById('reminder-time');
+        const addReminderButton = document.getElementById('add-reminder-button');
+        const remindersList = document.getElementById('reminders-list');
+        
+        // Perfil y Notificaciones
+        const exportProfileButton = document.getElementById('export-profile-button');
+        const importProfileButton = document.getElementById('import-profile-button');
+        const importFileInput = document.getElementById('import-file-input');
+        const toastNotification = document.getElementById('toast-notification');
+        const toastMessage = document.getElementById('toast-message');
+
+
+        // === 4. FUNCIONES DE FIREBASE Y PERSISTENCIA ===
+        
+        async function initializeFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                    } else {
+                        userId = crypto.randomUUID(); 
+                    }
+                    userIdDisplay.textContent = userId;
+                    setupFirestoreListeners(); 
+                });
+            } catch (error) {
+                console.error("Error al inicializar Firebase o autenticar:", error);
+                userIdDisplay.textContent = 'Error Auth';
+            }
+        }
+
+        function setupFirestoreListeners() {
+            if (!db || !userId) return;
+
+            const musicDocRef = doc(db, FIREBASE_COLLECTION_PATH, userId, 'pomodoro_music', 'tracks');
+            onSnapshot(musicDocRef, (docSnap) => {
+                tracks = docSnap.exists() ? docSnap.data().tracks || [] : [];
+                renderTrackList();
+                updateJukeboxControls();
+            }, (error) => console.error("Error al obtener la lista de música:", error));
+
+            const notesDocRef = doc(db, FIREBASE_COLLECTION_PATH, userId, 'pomodoro_data', 'notes');
+            onSnapshot(notesDocRef, (docSnap) => {
+                userNotes = docSnap.exists() ? docSnap.data().content || '' : '';
+                if(document.activeElement !== notesTextarea) {
+                    notesTextarea.value = userNotes;
+                }
+            }, (error) => console.error("Error al obtener las notas:", error));
+
+            const remindersDocRef = doc(db, FIREBASE_COLLECTION_PATH, userId, 'pomodoro_data', 'reminders');
+            onSnapshot(remindersDocRef, (docSnap) => {
+                userReminders = docSnap.exists() ? docSnap.data().reminders || [] : [];
+                renderReminders();
+            }, (error) => console.error("Error al obtener los recordatorios:", error));
+        }
+
+        async function saveDataToFirestore(collection, documentId, data) {
+            if (!db || !userId) {
+                console.error("Firestore no está listo. No se pudo guardar.");
+                return;
+            }
+            const docRef = doc(db, FIREBASE_COLLECTION_PATH, userId, collection, documentId);
+            try {
+                await setDoc(docRef, data);
+            } catch (error) {
+                console.error(`Error al guardar en ${collection}/${documentId}:`, error);
+            }
+        }
+
+
+        // === 5. FUNCIONES DEL POMODORO ===
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            const phase = PHASES[currentPhaseKey];
+            const root = document.documentElement;
+
+            timeDisplay.textContent = formatTime(timeRemaining);
+            phaseTitle.textContent = `Fase Actual: ${phase.label}`;
+            cycleCountDisplay.textContent = completedCycles;
+
+            root.style.setProperty('--phase-bg', getComputedStyle(root).getPropertyValue(phase.lightVar));
+            root.style.setProperty('--phase-text', getComputedStyle(root).getPropertyValue(phase.darkVar));
+
+            durationDisplayWork.textContent = PHASES['work'].duration / 60;
+            durationDisplayShortBreak.textContent = PHASES['shortBreak'].duration / 60;
+            durationDisplayLongBreak.textContent = PHASES['longBreak'].duration / 60;
+            
+            inputWork.value = PHASES['work'].duration / 60;
+            inputShortBreak.value = PHASES['shortBreak'].duration / 60;
+            inputLongBreak.value = PHASES['longBreak'].duration / 60;
+
+            highlightSelector(currentPhaseKey);
+        }
+        
+        function handleSaveSettings() {
+            const newWork = parseInt(inputWork.value, 10);
+            const newShort = parseInt(inputShortBreak.value, 10);
+            const newLong = parseInt(inputLongBreak.value, 10);
+
+            if (isNaN(newWork) || newWork < 1 || isNaN(newShort) || newShort < 1 || isNaN(newLong) || newLong < 1) {
+                showToast("Por favor, introduce duraciones válidas.", "error");
+                return;
+            }
+
+            PHASES.work.duration = newWork * 60;
+            PHASES.shortBreak.duration = newShort * 60;
+            PHASES.longBreak.duration = newLong * 60;
+            
+            if (!isRunning) {
+                timeRemaining = PHASES[currentPhaseKey].duration;
+            }
+            
+            settingsModal.classList.add('hidden');
+            updateDisplay();
+            updateControls(false);
+            showToast("Configuración de tiempo guardada.");
+        }
+
+        function switchPhase() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isRunning = false; 
+
+            currentPhaseIndex = (currentPhaseIndex + 1) % CYCLE_SEQUENCE.length;
+            currentPhaseKey = CYCLE_SEQUENCE[currentPhaseIndex];
+
+            if (currentPhaseKey === 'work' && currentPhaseIndex === 0) {
+                completedCycles++;
+            }
+            
+            timeRemaining = PHASES[currentPhaseKey].duration;
+            
+            updateDisplay();
+            startTimer(); 
+        }
+
+        function tick() {
+            if (timeRemaining > 0) {
+                timeRemaining--;
+                updateDisplay();
+            } else {
+                switchPhase();
+            }
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            updateControls(true);
+            timerInterval = setInterval(tick, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isRunning = false;
+            timeRemaining = PHASES[currentPhaseKey].duration;
+            updateDisplay();
+            updateControls(false);
+        }
+
+        function updateControls(running) {
+            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--color-accent');
+
+            if (running) {
+                startButton.textContent = 'Pausar';
+                startButton.style.backgroundColor = 'var(--phase-text)'; // Color de la fase activa
+                stopButton.disabled = false;
+                stopButton.classList.remove('opacity-50');
+                phaseSelectors.forEach(btn => btn.disabled = true);
+                settingsButton.disabled = true;
+            } else {
+                startButton.style.backgroundColor = accentColor; // Color del tema
+                startButton.textContent = timerInterval ? 'Continuar' : 'Empezar'; 
+                stopButton.disabled = !timerInterval;
+                stopButton.classList.toggle('opacity-50', !timerInterval);
+                phaseSelectors.forEach(btn => btn.disabled = false);
+                settingsButton.disabled = false;
+            }
+        }
+
+        function highlightSelector(key) {
+            phaseSelectors.forEach(btn => {
+                btn.classList.toggle('active-phase', btn.dataset.phase === key);
+            });
+        }
+        
+        function switchTheme(themeName) {
+            body.className = body.className.replace(/theme-\S+/g, '').trim();
+            body.classList.add(`theme-${themeName}`);
+            currentTheme = themeName;
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active-theme', btn.dataset.theme === themeName);
+            });
+            updateControls(isRunning); // Actualiza el color del botón de inicio
+        }
+
+        function toggleDarkMode(isDark) {
+            isDarkMode = isDark;
+            body.classList.toggle('dark-mode', isDark);
+            darkModeToggle.checked = isDark;
+        }
+
+        // === 6. FUNCIONES DE PERFIL, JUKEBOX Y UTILIDADES ===
+
+        function showToast(message, type = 'success') {
+            toastMessage.textContent = message;
+            toastNotification.classList.remove('bg-red-600', 'bg-gray-800');
+            if (type === 'error') {
+                toastNotification.classList.add('bg-red-600');
+            } else {
+                toastNotification.classList.add('bg-gray-800');
+            }
+            toastNotification.classList.add('show');
+            setTimeout(() => {
+                toastNotification.classList.remove('show');
+            }, 3000);
+        }
+        
+        function exportProfile() {
+            const profileData = {
+                profileVersion: 1,
+                timerSettings: {
+                    work: PHASES.work.duration,
+                    shortBreak: PHASES.shortBreak.duration,
+                    longBreak: PHASES.longBreak.duration
+                },
+                visualSettings: {
+                    theme: currentTheme,
+                    darkMode: isDarkMode
+                },
+                jukeboxTracks: tracks.filter(t => t.type === 'youtube'),
+                userNotes: userNotes,
+                userReminders: userReminders
+            };
+
+            const jsonString = JSON.stringify(profileData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pomodoro_profile.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Perfil guardado con éxito.");
+        }
+
+        function handleProfileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (!validateProfile(importedData)) {
+                         showToast("El archivo de perfil no es válido o está corrupto.", "error");
+                         return;
+                    }
+
+                    // Apply settings
+                    PHASES.work.duration = importedData.timerSettings.work;
+                    PHASES.shortBreak.duration = importedData.timerSettings.shortBreak;
+                    PHASES.longBreak.duration = importedData.timerSettings.longBreak;
+                    
+                    switchTheme(importedData.visualSettings.theme);
+                    toggleDarkMode(importedData.visualSettings.darkMode);
+
+                    tracks = importedData.jukeboxTracks || [];
+                    userNotes = importedData.userNotes || '';
+                    userReminders = importedData.userReminders || [];
+                    
+                    // Persist to Firebase
+                    saveDataToFirestore('pomodoro_music', 'tracks', { tracks });
+                    saveDataToFirestore('pomodoro_data', 'notes', { content: userNotes });
+                    saveDataToFirestore('pomodoro_data', 'reminders', { reminders: userReminders });
+
+                    // Update UI
+                    if (!isRunning) {
+                        timeRemaining = PHASES[currentPhaseKey].duration;
+                    }
+                    updateDisplay();
+                    renderTrackList();
+                    renderReminders();
+                    notesTextarea.value = userNotes;
+                    
+                    showToast("Perfil cargado e importado con éxito.");
+                    settingsModal.classList.add('hidden');
+
+                } catch (error) {
+                    showToast("Error al leer o procesar el archivo JSON.", "error");
+                    console.error("Import Error:", error);
+                } finally {
+                    // Reset file input to allow re-uploading the same file
+                    importFileInput.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function validateProfile(data) {
+            return data &&
+                   typeof data.profileVersion === 'number' &&
+                   data.timerSettings &&
+                   typeof data.timerSettings.work === 'number' &&
+                   data.visualSettings &&
+                   typeof data.visualSettings.theme === 'string' &&
+                   Array.isArray(data.jukeboxTracks) &&
+                   typeof data.userNotes === 'string' &&
+                   Array.isArray(data.userReminders);
+        }
+        
+        function renderReminders() {
+            remindersList.innerHTML = '';
+            if (userReminders.length === 0) {
+                remindersList.innerHTML = `<li class="text-sm text-center p-4" style="color: var(--text-secondary);">No hay recordatorios.</li>`;
+                return;
+            }
+            const sorted = [...userReminders].sort((a, b) => new Date(`${a.date}T${a.time||'00:00'}`) - new Date(`${b.date}T${b.time||'00:00'}`));
+            sorted.forEach(reminder => {
+                const li = document.createElement('li');
+                li.className = 'p-2 rounded-lg flex justify-between items-center text-sm';
+                li.style.backgroundColor = 'var(--bg-body)';
+                li.innerHTML = `
+                    <div>
+                        <strong class="block">${reminder.text}</strong>
+                        <span style="color: var(--text-secondary);">${new Date(reminder.date + 'T' + (reminder.time || '00:00')).toLocaleString()}</span>
+                    </div>
+                    <button data-id="${reminder.id}" class="delete-reminder-btn p-1 text-red-500 hover:text-red-700">✖️</button>
+                `;
+                remindersList.appendChild(li);
+            });
+        }
+
+        function handleAddReminder() {
+            const text = reminderTextInput.value.trim();
+            const date = reminderDateInput.value;
+            const time = reminderTimeInput.value;
+
+            if (!text || !date) {
+                showToast('La descripción y la fecha son obligatorias.', 'error');
+                return;
+            }
+
+            userReminders.push({ id: Date.now(), text, date, time });
+            saveDataToFirestore('pomodoro_data', 'reminders', { reminders: userReminders });
+            
+            reminderTextInput.value = '';
+            reminderDateInput.value = '';
+            reminderTimeInput.value = '';
+        }
+
+        function handleDeleteReminder(id) {
+            userReminders = userReminders.filter(r => r.id.toString() !== id.toString());
+            saveDataToFirestore('pomodoro_data', 'reminders', { reminders: userReminders });
+        }
+
+        function stopAllMedia() {
+            audioPlayer.pause();
+            audioPlayer.src = '';
+            isPlaying = false;
+            youtubePlayerContainer.innerHTML = '';
+            youtubePlayerContainer.classList.add('hidden');
+        }
+
+        function renderTrackList() {
+            trackListElement.innerHTML = '';
+            if (tracks.length === 0) {
+                trackListElement.innerHTML = `<li class="p-2 text-sm text-center" style="color: var(--text-secondary);">Carga tus pistas o añade enlaces.</li>`;
+            } else {
+                tracks.forEach((track, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'p-2 rounded-lg text-sm cursor-pointer transition-all duration-150 truncate track-item';
+                    li.dataset.index = index;
+                    li.innerHTML = `${track.type === 'youtube' ? '▶️' : '🎧'} ${track.name}`;
+                    if (index === currentTrackIndex) li.classList.add('active-track');
+                    li.addEventListener('click', () => loadTrack(index));
+                    trackListElement.appendChild(li);
+                });
+            }
+            updateJukeboxControls();
+        }
+
+        function loadTrack(index) {
+            stopAllMedia();
+            const track = tracks[index];
+            if (!track) return;
+            
+            currentTrackIndex = index;
+            currentTrackType = track.type;
+
+            if (track.type === 'local') {
+                audioPlayer.src = track.url;
+                audioPlayer.load();
+                audioPlayer.play().then(() => isPlaying = true).catch(() => isPlaying = false);
+            } else if (track.type === 'youtube' && track.videoId) {
+                isPlaying = true; // Assume autoplay will work
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://www.youtube.com/embed/${track.videoId}?autoplay=1&controls=1&modestbranding=1&rel=0`;
+                iframe.allow = 'autoplay; encrypted-media';
+                iframe.allowFullscreen = true;
+                iframe.frameBorder = '0';
+                youtubePlayerContainer.appendChild(iframe);
+                youtubePlayerContainer.classList.remove('hidden');
+            }
+            renderTrackList();
+            updateJukeboxControls();
+        }
+
+        function updateJukeboxControls() {
+            const hasLocal = tracks.some(t => t.type === 'local');
+            html5Controls.classList.toggle('hidden', currentTrackType === 'youtube');
+            youtubePlayerContainer.classList.toggle('hidden', currentTrackType !== 'youtube');
+
+            playPauseBtn.disabled = !hasLocal || currentTrackType !== 'local';
+            prevTrackBtn.disabled = !hasLocal || currentTrackType !== 'local';
+            nextTrackBtn.disabled = !hasLocal || currentTrackType !== 'local';
+            volumeSlider.disabled = !hasLocal || currentTrackType !== 'local';
+            playPauseBtn.textContent = isPlaying ? '⏸️' : '▶️';
+            currentTrackNameDisplay.textContent = tracks[currentTrackIndex]?.name || "Selecciona una pista";
+        }
+
+        const findNextLocalTrackIndex = (dir) => {
+            if (tracks.length === 0) return -1;
+            let start = currentTrackIndex === -1 ? 0 : currentTrackIndex;
+            for (let i = 0; i < tracks.length; i++) {
+                start = (start + dir + tracks.length) % tracks.length;
+                if (tracks[start].type === 'local') return start;
+            }
+            return -1;
+        };
+        const nextTrack = () => { const i = findNextLocalTrackIndex(1); if (i !== -1) loadTrack(i); };
+        const prevTrack = () => { const i = findNextLocalTrackIndex(-1); if (i !== -1) loadTrack(i); };
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                tracks.push({ id: Date.now(), name: file.name, type: 'local', url: e.target.result });
+                renderTrackList();
+                saveDataToFirestore('pomodoro_music', 'tracks', { tracks });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleYoutubeAdd() {
+            const url = youtubeInput.value.trim();
+            // This regex is robust and should handle standard, short, and embed links.
+            const videoId = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|embed\/|v\/|shorts\/)|youtu\.be\/|youtube-nocookie\.com\/embed\/)([^"&?\/\s]{11})/)?.[1];
+            
+            if (videoId) {
+                // Check for duplicates before adding
+                if (tracks.some(track => track.videoId === videoId)) {
+                    showToast('Este video ya está en la lista.', 'error');
+                    return;
+                }
+
+                tracks.push({ id: Date.now(), name: `YouTube: ${videoId}`, type: 'youtube', url, videoId });
+                youtubeInput.value = '';
+                
+                // FIX: Directly render the list for immediate feedback (optimistic update)
+                renderTrackList(); 
+                
+                // Save the updated list to Firebase
+                saveDataToFirestore('pomodoro_music', 'tracks', { tracks });
+                
+                showToast('Video de YouTube añadido.', 'success');
+            } else {
+                showToast('Enlace de YouTube inválido.', 'error');
+            }
+        }
+
+        // === 7. EVENT LISTENERS PRINCIPALES ===
+        startButton.addEventListener('click', () => {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                isRunning = false;
+                updateControls(false);
+            } else {
+                startTimer();
+            }
+        });
+
+        stopButton.addEventListener('click', stopTimer);
+
+        phaseSelectors.forEach(button => {
+            button.addEventListener('click', (event) => {
+                if (isRunning) return; 
+                clearInterval(timerInterval);
+                timerInterval = null;
+                isRunning = false;
+                currentPhaseKey = event.currentTarget.dataset.phase;
+                currentPhaseIndex = CYCLE_SEQUENCE.findIndex(key => key === currentPhaseKey);
+                timeRemaining = PHASES[currentPhaseKey].duration;
+                updateDisplay();
+                updateControls(false); 
+            });
+        });
+
+        settingsButton.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+        saveSettingsButton.addEventListener('click', handleSaveSettings);
+        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) settingsModal.classList.add('hidden'); });
+
+        darkModeToggle.addEventListener('change', (e) => toggleDarkMode(e.target.checked));
+        themeSelector.addEventListener('click', (e) => {
+            const btn = e.target.closest('.theme-btn');
+            if (btn) switchTheme(btn.dataset.theme);
+        });
+        
+        utilityPanelButton.addEventListener('click', () => utilityPanel.classList.add('panel-open'));
+        closeUtilityPanelButton.addEventListener('click', () => utilityPanel.classList.remove('panel-open'));
+        saveNotesButton.addEventListener('click', () => {
+            userNotes = notesTextarea.value;
+            saveDataToFirestore('pomodoro_data', 'notes', { content: userNotes });
+            showToast("Notas guardadas.");
+        });
+        addReminderButton.addEventListener('click', handleAddReminder);
+        remindersList.addEventListener('click', (e) => {
+            const btn = e.target.closest('.delete-reminder-btn');
+            if (btn) handleDeleteReminder(btn.dataset.id);
+        });
+
+        fileUploadInput.addEventListener('change', handleFileUpload);
+        addYoutubeBtn.addEventListener('click', handleYoutubeAdd);
+        playPauseBtn.addEventListener('click', () => { if (audioPlayer.paused) audioPlayer.play(); else audioPlayer.pause(); });
+        nextTrackBtn.addEventListener('click', nextTrack);
+        prevTrackBtn.addEventListener('click', prevTrack);
+        volumeSlider.addEventListener('input', (e) => audioPlayer.volume = e.target.value);
+        audioPlayer.addEventListener('play', () => { isPlaying = true; updateJukeboxControls(); });
+        audioPlayer.addEventListener('pause', () => { isPlaying = false; updateJukeboxControls(); });
+        audioPlayer.addEventListener('ended', nextTrack);
+        // RESTORED: Error handler for the audio player
+        audioPlayer.addEventListener('error', (e) => {
+            const error = audioPlayer.error;
+            let message = 'No se pudo reproducir la pista local.';
+            let type = 'error';
+            if (error) {
+                switch (error.code) {
+                    case error.MEDIA_ERR_ABORTED: message = 'Carga de audio abortada.'; type = 'info'; break;
+                    case error.MEDIA_ERR_NETWORK: message = 'Error de red al cargar el audio.'; break;
+                    case error.MEDIA_ERR_DECODE: message = 'Error de decodificación o formato no soportado.'; break;
+                    case error.MEDIA_ERR_SRC_NOT_SUPPORTED: message = 'Tipo de audio no soportado.'; break;
+                    default: message = 'La reproducción fue bloqueada por el navegador.'; type = 'info'; break;
+                }
+            }
+            showToast(`Error de audio: ${message}`, type);
+            console.error("Audio error object:", error);
+        });
+
+        // Profile Management Listeners
+        exportProfileButton.addEventListener('click', exportProfile);
+        importProfileButton.addEventListener('click', () => importFileInput.click());
+        importFileInput.addEventListener('change', handleProfileImport);
+
+
+        // === 8. INICIALIZACIÓN ===
+        window.onload = function() {
+            initializeFirebase();
+            updateDisplay();
+            updateControls(false);
+            switchTheme(currentTheme); 
+        };
+    </script>
+</body>
+</html>
+
