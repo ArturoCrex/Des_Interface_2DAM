@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de Música y Calendario</title>
+    <!-- 1. Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 2. Configuración de Tailwind y Fuentes -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        };
+    </script>
+    <!-- 3. Estilos CSS Internos -->
+    <style>
+        /* Estilos base */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6; /* Un gris muy claro */
+        }
+        
+        /* Estilos para el calendario */
+        #calendar-grid {
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+        }
+
+        /* Botón de día del calendario */
+        .calendar-day {
+            transition: all 0.2s ease-in-out;
+            border: 1px solid transparent;
+        }
+        
+        .calendar-day:hover {
+            background-color: #e0f2fe; /* Azul claro al pasar el ratón */
+            border-color: #0ea5e9; /* Borde azul */
+        }
+        
+        /* Indicador de evento en un día */
+        .calendar-day-event {
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: #3b82f6; /* Punto azul */
+            border-radius: 50%;
+        }
+        
+        /* Día actual */
+        .today {
+            background-color: #fef08a; /* Amarillo claro */
+            font-weight: bold;
+        }
+
+        /* Día fuera del mes */
+        .other-month {
+            color: #9ca3af; /* Gris */
+            background-color: #f3f4f6; /* Fondo grisáceo */
+        }
+
+        /* Estilos para el Modal (Panel de Configuración) */
+        #schedule-modal {
+            background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro semitransparente */
+            transition: opacity 0.3s ease;
+        }
+
+        /* Estilos para la lista de reproducción */
+        .playlist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        
+        .playlist-item:hover {
+            background-color: #e5e7eb; /* Gris claro al pasar el ratón */
+        }
+
+        /* ADDED: Style for playing item */
+        .playlist-item.playing {
+            background-color: #dbeafe; /* Un azul claro */
+            font-weight: 600;
+        }
+
+    </style>
+</head>
+<body class="text-gray-900 antialiased">
+
+    <!-- Contenedor Principal -->
+    <div class="container mx-auto max-w-7xl p-4 min-h-screen">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Reproductor de Música y Calendario</h1>
+
+        <!-- Layout de dos columnas para pantallas grandes -->
+        <div class="flex flex-col lg:flex-row gap-6">
+
+            <!-- Columna Izquierda: Reproductor y Biblioteca -->
+            <div class="lg:w-1/3 bg-white p-5 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">Mi Biblioteca de Música</h2>
+                
+                <!-- Input para cargar archivos -->
+                <div>
+                    <label for="file-input" class="block text-sm font-medium text-gray-700 mb-2">Cargar canciones:</label>
+                    <input type="file" id="file-input" multiple accept="audio/mp3, audio/wav, audio/flac, audio/ogg" class="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-lg file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-blue-50 file:text-blue-700
+                        hover:file:bg-blue-100 transition-colors cursor-pointer
+                    ">
+                    <p class="text-xs text-gray-500 mt-1">Soporta: MP3, WAV, FLAC, OGG.</p>
+                </div>
+
+                <!-- Reproductor de Audio Principal -->
+                <div class="mt-6">
+                    <h3 class="font-semibold text-lg mb-2">Reproductor</h3>
+                    <audio id="main-audio-player" controls class="w-full rounded-lg shadow-inner"></audio>
+                    <!-- ADDED: Now Playing display -->
+                    <div class="mt-2 text-sm text-gray-700">
+                        <strong>Reproduciendo:</strong>
+                        <span id="now-playing-text">Nada</span>
+                    </div>
+
+                    <!-- ADDED: Playback Speed Control -->
+                    <div class="mt-4">
+                        <label for="playback-speed" class="block text-sm font-medium text-gray-700">Velocidad:</label>
+                        <select id="playback-speed" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                            <option value="0.5">0.5x (Lento)</option>
+                            <option value="0.75">0.75x</option>
+                            <option value="1" selected>1.0x (Normal)</option>
+                            <option value="1.25">1.25x</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="1.75">1.75x</option>
+                            <option value="2">2.0x (Rápido)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ADDED: EQ Controls (Request 3) -->
+                <div class="mt-6">
+                    <h3 class="font-semibold text-lg mb-2">Ajustes de Sonido (EQ)</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="bass-slider" class="block text-sm font-medium text-gray-700">Graves</label>
+                            <input type="range" id="bass-slider" min="-15" max="15" value="0" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                        </div>
+                        <div>
+                            <label for="treble-slider" class="block text-sm font-medium text-gray-700">Agudos</label>
+                            <input type="range" id="treble-slider" min="-15" max="15" value="0" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de canciones cargadas -->
+                <div class="mt-6">
+                    <h3 class="font-semibold text-lg mb-2">Canciones Cargadas</h3>
+                    <div id="playlist" class="h-64 overflow-y-auto bg-gray-50 p-3 rounded-lg border border-gray-200 space-y-2">
+                        <!-- Las canciones se añadirán aquí dinámicamente -->
+                        <p class="text-gray-500 text-center" id="playlist-empty">Aún no hay canciones. Carga archivos para empezar.</p>
+                    </div>
+                </div>
+
+                <!-- ADDED: Playlists (Folders) Section -->
+                <div class="mt-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-semibold text-lg">Listas de Reproducción</h3>
+                        <button id="create-playlist-btn" class="text-sm bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition-colors shadow-sm">
+                            Crear Lista
+                        </button>
+                    </div>
+                    <div id="playlist-list-container" class="h-48 overflow-y-auto bg-gray-50 p-3 rounded-lg border border-gray-200 space-y-3">
+                        <p class="text-gray-500 text-center" id="playlist-list-empty">Aún no has creado listas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Calendario -->
+            <div class="lg:w-2/3 bg-white p-5 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">Calendario de Sonidos</h2>
+                
+                <!-- Controles del Calendario (Mes y Año) -->
+                <div class="flex justify-between items-center mb-4">
+                    <button id="prev-month-btn" class="p-2 rounded-lg hover:bg-gray-200 transition-colors">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <h3 id="month-year-header" class="text-xl font-semibold text-center"></h3>
+                    <button id="next-month-btn" class="p-2 rounded-lg hover:bg-gray-200 transition-colors">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+
+                <!-- Días de la semana -->
+                <div class="grid grid-cols-7 gap-1 text-center font-semibold text-sm text-gray-600 mb-2">
+                    <div>Lun</div>
+                    <div>Mar</div>
+                    <div>Mié</div>
+                    <div>Jue</div>
+                    <div>Vie</div>
+                    <div>Sáb</div>
+                    <div>Dom</div>
+                </div>
+
+                <!-- Rejilla de días del calendario -->
+                <div id="calendar-grid" class="grid gap-1">
+                    <!-- Los días se generarán aquí con JavaScript -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal/Panel de Configuración de Horario (Oculto por defecto) -->
+    <div id="schedule-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-lg rounded-lg shadow-2xl overflow-hidden transform transition-all" id="modal-content">
+            <!-- Encabezado del Modal -->
+            <div class="flex justify-between items-center p-5 bg-gray-100 border-b border-gray-200">
+                <h3 class="text-xl font-semibold" id="modal-title">Configurar Día</h3>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Cuerpo del Modal (Formulario) -->
+            <form id="schedule-form" class="p-6 space-y-4">
+                <input type="hidden" id="selected-date-iso">
+                
+                <!-- MODIFIED: Playback Configuration -->
+                <div>
+                    <label for="playback-type-select" class="block text-sm font-medium text-gray-700">¿Qué reproducir?</label>
+                    <select id="playback-type-select" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="none">Nada</option>
+                        <option value="songs">Canciones Individuales</option>
+                        <option value="playlist">Lista de Reproducción</option>
+                    </select>
+                </div>
+
+                <!-- Grupo de Configuración de Canciones (Oculto por defecto) -->
+                <div id="songs-config-group" class="hidden space-y-1">
+                    <label for="song-select-modal" class="block text-sm font-medium text-gray-700">Canciones a reproducir:</label>
+                    <select id="song-select-modal" multiple class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 h-32">
+                        <!-- Opciones de canciones desde la biblioteca -->
+                    </select>
+                    <p class="text-xs text-gray-500">Mantén Ctrl (o Cmd en Mac) para seleccionar varias.</p>
+                </div>
+
+                <!-- Grupo de Configuración de Playlist (Oculto por defecto) -->
+                <div id="playlist-config-group" class="hidden space-y-1">
+                    <label for="playlist-select-modal" class="block text-sm font-medium text-gray-700">Seleccionar Lista:</label>
+                    <select id="playlist-select-modal" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <!-- Opciones de listas creadas -->
+                    </select>
+                </div>
+                
+                <!-- Selección de Canciones (REMOVED - Replaced by groups above) -->
+                <!--
+                <div>
+                    <label for="song-select" class="block text-sm font-medium text-gray-700">Canciones a reproducir:</label>
+                    <select id="song-select" multiple class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 h-40">
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">Mantén Ctrl (o Cmd en Mac) para seleccionar varias.</p>
+                </div>
+                -->
+
+                <!-- Tipo de Horario -->
+                <div>
+                    <label for="schedule-type" class="block text-sm font-medium text-gray-700">Regla de repetición:</label>
+                    <select id="schedule-type" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="once">Solo una vez (en esta fecha)</option>
+                        <option value="weekly">Semanalmente (cada [día de la semana])</option>
+                        <option value="monthly">Mensualmente (cada día [número])</option>
+                    </select>
+                </div>
+
+                <!-- ADDED: Loop Checkbox -->
+                <div class="flex items-center">
+                    <input id="loop-playback" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="loop-playback" class="ml-2 block text-sm text-gray-900">
+                        Reproducir en bucle
+                    </label>
+                </div>
+
+                <!-- Hora de Reproducción -->
+                <!-- REMOVED: Section for song playback time -->
+                <!--
+                <div>
+                    <label for="song-time" class="block text-sm font-medium text-gray-700">Hora de reproducción (Canciones):</label>
+                    <input type="time" id="song-time" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                -->
+
+                <!-- ADDED: Notes and Reminder Section -->
+                <div class="border-t border-gray-200 pt-4 space-y-4">
+                    <div>
+                        <label for="note-text" class="block text-sm font-medium text-gray-700">Nota / Recordatorio:</label>
+                        <textarea id="note-text" rows="3" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Escribe tu nota aquí..."></textarea>
+                    </div>
+                    <div>
+                        <label for="reminder-time" class="block text-sm font-medium text-gray-700">Hora del Recordatorio (Aviso):</label>
+                        <input type="time" id="reminder-time" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <p class="text-xs text-gray-500 mt-1">Deja esto en blanco si no quieres un aviso.</p>
+                    </div>
+                </div>
+
+
+                <!-- Botón de Guardar -->
+                <!-- MODIFIED: Wrapper to justify-between -->
+                <div class="flex justify-between items-center pt-4">
+                    <!-- ADDED: Delete Button -->
+                    <button type="button" id="delete-schedule-btn" class="bg-red-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-red-700 transition-colors shadow">
+                        Eliminar
+                    </button>
+                    
+                    <button type="submit" id="save-schedule-btn" class="bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700 transition-colors shadow">
+                        Guardar Configuración
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADDED: Reminder Alert Modal (Hidden by default) -->
+    <div id="reminder-alert" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden" style="background-color: rgba(0, 0, 0, 0.6);">
+        <div class="bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden transform transition-all">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-5 bg-blue-600 text-white">
+                <h3 class="text-xl font-semibold">¡Recordatorio!</h3>
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            </div>
+            <!-- Body -->
+            <div class="p-6">
+                <p id="reminder-alert-text" class="text-gray-800 text-base" style="white-space: pre-wrap;"></p>
+            </div>
+            <!-- Footer -->
+            <div class="flex justify-end p-4 bg-gray-100 border-t border-gray-200">
+                <button id="reminder-alert-close" class="bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700 transition-colors shadow">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 4. JavaScript Integrado -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- ESTADO GLOBAL DE LA APLICACIÓN ---
+            
+            /** @type { {id: string, name: string, file: File, url: string}[] } */
+            let audioLibrary = [];
+            
+            /* ADDED: Playlists state */
+            /** @type {Object<string, {id: string, name: string, songIds: string[]}>} */
+            let playlists = {}; // Clave: playlistId
+            
+            /* MODIFIED: Updated schedule structure */
+            /** * @type {Object<string, {
+             * date: string, 
+             * type: 'once'|'weekly'|'monthly', 
+             * playback: { 
+             * type: 'none' | 'songs' | 'playlist', 
+             * ids: string[], 
+             * playlistId: string | null 
+             * },
+             * loop: boolean,
+             * note: string, 
+             * reminderTime: string
+             * }>} 
+             */
+            let schedules = {}; // Clave: ISO date string (YYYY-MM-DD)
+            
+            let currentDate = new Date();
+            
+            /** @type {AudioContext | null} */
+            let audioContext = null;
+            
+            /* REMOVED */
+            /* let activeAudioSources = []; // Para detener sonidos si es necesario */
+
+            /* ADDED */
+            let calendarPlaylist = []; // Lista de canciones del calendario
+            let currentCalendarSongIndex = 0;
+            let isCalendarPlayback = false; // Flag para el evento 'ended'
+            /* ADDED: Flag for calendar looping */
+            let isCalendarLooping = false;
+
+            // ADDED: EQ/Web Audio variables for main player
+            /** @type {MediaElementAudioSourceNode | null} */
+            let mainAudioSource = null;
+            /** @type {BiquadFilterNode | null} */
+            let bassFilter = null;
+            /** @type {BiquadFilterNode | null} */
+            let trebleFilter = null;
+
+            // --- REFERENCIAS AL DOM ---
+            const fileInput = document.getElementById('file-input');
+            const mainAudioPlayer = document.getElementById('main-audio-player');
+            const playlistDiv = document.getElementById('playlist');
+            const playlistEmptyMsg = document.getElementById('playlist-empty');
+            
+            /* ADDED: Playback speed reference */
+            const playbackSpeedSelect = document.getElementById('playback-speed');
+
+            /* ADDED: Playlist UI references */
+            const createPlaylistBtn = document.getElementById('create-playlist-btn');
+            const playlistListContainer = document.getElementById('playlist-list-container');
+            const playlistListEmptyMsg = document.getElementById('playlist-list-empty');
+
+            const calendarGrid = document.getElementById('calendar-grid');
+            const monthYearHeader = document.getElementById('month-year-header');
+            const prevMonthBtn = document.getElementById('prev-month-btn');
+            const nextMonthBtn = document.getElementById('next-month-btn');
+
+            const scheduleModal = document.getElementById('schedule-modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const scheduleForm = document.getElementById('schedule-form');
+            /* REMOVED: Old song select */
+            /* const songSelect = document.getElementById('song-select'); */
+            const scheduleTypeSelect = document.getElementById('schedule-type');
+            /* REMOVED: Reference to songTimeInput */
+            /* const songTimeInput = document.getElementById('song-time'); */
+            const selectedDateInput = document.getElementById('selected-date-iso');
+            
+            /* ADDED: New Modal references */
+            const playbackTypeSelect = document.getElementById('playback-type-select');
+            const songsConfigGroup = document.getElementById('songs-config-group');
+            const songSelectModal = document.getElementById('song-select-modal');
+            const playlistConfigGroup = document.getElementById('playlist-config-group');
+            const playlistSelectModal = document.getElementById('playlist-select-modal');
+            const loopPlaybackCheckbox = document.getElementById('loop-playback');
+            
+            // ADDED: New DOM references
+            const nowPlayingText = document.getElementById('now-playing-text');
+            const bassSlider = document.getElementById('bass-slider');
+            const trebleSlider = document.getElementById('treble-slider');
+            const deleteScheduleBtn = document.getElementById('delete-schedule-btn');
+            
+            /* ADDED: Note and Reminder DOM elements */
+            const noteTextInput = document.getElementById('note-text');
+            const reminderTimeInput = document.getElementById('reminder-time');
+            const reminderAlert = document.getElementById('reminder-alert');
+            const reminderAlertText = document.getElementById('reminder-alert-text');
+            const reminderAlertClose = document.getElementById('reminder-alert-close');
+            
+            // --- INICIALIZACIÓN DE WEB AUDIO API ---
+            function initAudioContext() {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.error('Web Audio API no es soportada en este navegador.', e);
+                    alert('Tu navegador no soporta la Web Audio API, necesaria para reproducir múltiples sonidos.');
+                }
+
+                // ADDED: Setup for main player EQ
+                if (audioContext) {
+                    // Create filters
+                    bassFilter = audioContext.createBiquadFilter();
+                    trebleFilter = audioContext.createBiquadFilter();
+
+                    bassFilter.type = 'lowshelf';
+                    bassFilter.frequency.value = 350; // Bass frequencies (mid-bass)
+                    bassFilter.gain.value = 0;
+
+                    trebleFilter.type = 'highshelf';
+                    trebleFilter.frequency.value = 2200; // Treble frequencies
+                    trebleFilter.gain.value = 0;
+
+                    // MODIFIED: Conectamos los filtros en cadena AHORA
+                    // El audio del calendario (BufferSource) se conectará a bassFilter
+                    // El audio del reproductor (MediaElement) se conectará a bassFilter
+                    bassFilter.connect(trebleFilter);
+                    trebleFilter.connect(audioContext.destination);
+
+                    // Connect the main <audio> element
+                    // This can only be done *after* a user interaction,
+                    // so we'll check/create it on first play.
+                }
+            }
+            initAudioContext();
+
+
+            // ADDED: Helper function for EQ setup
+            function initMainAudioSource() {
+                if (!audioContext) return;
+                // Create source only once
+                if (!mainAudioSource) {
+                    try {
+                        mainAudioSource = audioContext.createMediaElementSource(mainAudioPlayer);
+                        
+                        // MODIFIED: Connect graph: source -> bass
+                        // (el resto de la cadena ya está conectada)
+                        mainAudioSource.connect(bassFilter);
+                        console.log("Audio graph for main player connected.");
+
+                    } catch (e) {
+                        console.error("Error connecting main audio element:", e);
+                    }
+                }
+                
+                // Ensure context is running (browsers suspend it)
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            }
+
+
+            // --- LÓGICA DEL REPRODUCTOR Y BIBLIOTECA ---
+
+            fileInput.addEventListener('change', handleFileChange);
+            /* ADDED: Playback speed listener */
+            playbackSpeedSelect.addEventListener('change', (e) => {
+                mainAudioPlayer.playbackRate = parseFloat(e.target.value);
+            });
+
+            function handleFileChange(event) {
+                const files = event.target.files;
+                if (!files.length) return;
+
+                // Ocultar mensaje de vacío
+                if (playlistEmptyMsg) playlistEmptyMsg.style.display = 'none';
+
+                for (const file of files) {
+                    if (!file.type.startsWith('audio/')) {
+                        console.warn(`Archivo omitido (no es audio): ${file.name}`);
+                        continue;
+                    }
+                    
+                    const song = {
+                        id: `song-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+                        name: file.name,
+                        file: file,
+                        url: URL.createObjectURL(file) // Para el reproductor principal
+                    };
+                    
+                    audioLibrary.push(song);
+                    addSongToPlaylistUI(song);
+                }
+                
+                // Actualizar el desplegable del modal
+                /* MODIFIED: Call new function */
+                populateSongSelectModal();
+
+                /* --- ADDED FIX --- */
+                // Poblar los menús "Añadir a..." de TODAS las canciones
+                // (incluyendo las nuevas que se acaban de añadir)
+                populatePlaylistDropdowns();
+            }
+
+            function addSongToPlaylistUI(song) {
+                const item = document.createElement('div');
+                item.className = 'playlist-item text-sm';
+                /* ADDED */
+                item.dataset.songId = song.id; // Para encontrarlo y resaltarlo
+                
+                const songName = document.createElement('span');
+                songName.textContent = song.name;
+                songName.className = 'truncate max-w-[50%]'; // Reducido para dejar espacio
+                
+                /* ADDED: "Add to playlist" dropdown */
+                const addToListSelect = document.createElement('select');
+                addToListSelect.className = 'add-to-playlist-select text-xs rounded border-gray-300 shadow-sm p-1';
+                addToListSelect.dataset.songId = song.id;
+                addToListSelect.innerHTML = '<option value="">Añadir a...</option>';
+                // Las listas se poblarán con populatePlaylistDropdowns
+                
+                addToListSelect.addEventListener('change', (e) => {
+                    const playlistId = e.target.value;
+                    const songId = e.target.dataset.songId;
+                    if (!playlistId || !songId) return;
+                    
+                    const playlist = playlists[playlistId];
+                    if (playlist && !playlist.songIds.includes(songId)) {
+                        playlist.songIds.push(songId);
+                        console.log(`Canción ${songId} añadida a ${playlistId}`);
+                        renderPlaylists(); // Re-render para mostrar la canción en la lista
+                    }
+                    // Reset dropdown
+                    e.target.value = "";
+                });
+
+                const playBtn = document.createElement('button');
+                playBtn.innerHTML = `<svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>`;
+                playBtn.className = 'hover:opacity-75 transition-opacity';
+                playBtn.title = `Reproducir ${song.name}`;
+                playBtn.onclick = () => {
+                    /* ADDED: Detener la lista de reproducción del calendario si está activa */
+                    stopMainPlayerPlayback();
+                    isCalendarPlayback = false;
+                    
+                    // ADDED: Init audio graph on first play
+                    initMainAudioSource();
+
+                    mainAudioPlayer.src = song.url;
+                    mainAudioPlayer.play();
+
+                    // ADDED: Update "Now Playing" text (Request 2)
+                    nowPlayingText.textContent = song.name;
+
+                    /* MODIFIED: Use new helper function */
+                    updatePlayingClass(song.id);
+                };
+
+                /* MODIFIED: Create a wrapper for controls */
+                const controlsWrapper = document.createElement('div');
+                controlsWrapper.className = 'flex items-center gap-2';
+                controlsWrapper.appendChild(addToListSelect);
+                controlsWrapper.appendChild(playBtn);
+                
+                item.appendChild(songName);
+                /* item.appendChild(playBtn); */
+                item.appendChild(controlsWrapper);
+                
+                playlistDiv.appendChild(item);
+            }
+            
+            /* MODIFIED: Renamed function and changed target */
+            function populateSongSelectModal() {
+                songSelectModal.innerHTML = ''; // Limpiar opciones anteriores
+                if (audioLibrary.length === 0) {
+                     songSelectModal.innerHTML = '<option disabled>No hay canciones en la biblioteca.</option>';
+                     return;
+                }
+                audioLibrary.forEach(song => {
+                    const option = document.createElement('option');
+                    option.value = song.id;
+                    option.textContent = song.name;
+                    songSelectModal.appendChild(option);
+                });
+            }
+            
+            /* ADDED: Function to populate all "Add to..." dropdowns */
+            function populatePlaylistDropdowns() {
+                const selects = document.querySelectorAll('.add-to-playlist-select');
+                const playlistOptions = Object.values(playlists).map(p => 
+                    `<option value="${p.id}">${p.name}</option>`
+                ).join('');
+                
+                selects.forEach(select => {
+                    // MODIFIED: Reconstruir desde cero para evitar duplicados
+                    const firstOption = '<option value="">Añadir a...</option>';
+                    select.innerHTML = firstOption + playlistOptions;
+                    /* OLD (generaba duplicados)
+                    // Guardar la opción "Añadir a..."
+                    const firstOption = select.innerHTML;
+                    select.innerHTML = firstOption + playlistOptions;
+                    */
+                });
+                
+                // También poblar el del modal
+                populatePlaylistSelectModal();
+            }
+            
+            /* ADDED: Function to populate the modal's playlist selector */
+            function populatePlaylistSelectModal() {
+                playlistSelectModal.innerHTML = '';
+                if (Object.keys(playlists).length === 0) {
+                    playlistSelectModal.innerHTML = '<option disabled>No hay listas creadas.</option>';
+                    return;
+                }
+                const playlistOptions = Object.values(playlists).map(p => 
+                    `<option value="${p.id}">${p.name}</option>`
+                ).join('');
+                playlistSelectModal.innerHTML = playlistOptions;
+            }
+
+            
+            /* ADDED: Helper function to highlight the playing song */
+            function updatePlayingClass(songId) {
+                // Quitar resaltado de cualquier otro item
+                document.querySelectorAll('.playlist-item.playing').forEach(el => {
+                    el.classList.remove('playing');
+                });
+                
+                if (songId) {
+                    // Resaltar el item actual
+                    const item = document.querySelector(`.playlist-item[data-song-id="${songId}"]`);
+                    if (item) {
+                        item.classList.add('playing');
+                    }
+                }
+            }
+
+            /* ADDED: Helper function to stop all playback */
+            function stopMainPlayerPlayback() {
+                mainAudioPlayer.pause();
+                mainAudioPlayer.src = '';
+                /* ADDED: Reset loop */
+                mainAudioPlayer.loop = false; // Detener bucle de single track
+                isCalendarLooping = false; // Detener bucle de playlist
+                
+                nowPlayingText.textContent = 'Nada';
+                calendarPlaylist = [];
+                currentCalendarSongIndex = 0;
+                isCalendarPlayback = false;
+                updatePlayingClass(null); // Quitar todo resaltado
+            }
+
+
+            // --- LÓGICA DE LISTAS DE REPRODUCCIÓN (PLAYLISTS) ---
+            
+            createPlaylistBtn.addEventListener('click', () => {
+                const name = prompt('Nombre de la nueva lista de reproducción:');
+                if (!name || name.trim() === '') return;
+                
+                const id = `playlist-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+                playlists[id] = {
+                    id: id,
+                    name: name.trim(),
+                    songIds: []
+                };
+                
+                console.log('Lista creada:', playlists[id]);
+                renderPlaylists();
+                populatePlaylistDropdowns(); // Actualizar todos los dropdowns
+            });
+
+            // Usar delegación de eventos para los botones de eliminar
+            playlistListContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('delete-playlist-btn')) {
+                    const playlistId = e.target.dataset.playlistId;
+                    if (playlistId && playlists[playlistId]) {
+                        if (confirm(`¿Estás seguro de que quieres eliminar la lista "${playlists[playlistId].name}"?`)) {
+                            delete playlists[playlistId];
+                            renderPlaylists();
+                            populatePlaylistDropdowns();
+                            console.log(`Lista ${playlistId} eliminada.`);
+                        }
+                    }
+                }
+            });
+
+            function renderPlaylists() {
+                playlistListContainer.innerHTML = ''; // Limpiar
+                
+                const playlistIds = Object.keys(playlists);
+                
+                if (playlistIds.length === 0) {
+                    playlistListContainer.appendChild(playlistListEmptyMsg);
+                    return;
+                }
+                
+                playlistListEmptyMsg.remove(); // Quitar mensaje de vacío
+                
+                Object.values(playlists).forEach(playlist => {
+                    const container = document.createElement('div');
+                    container.className = 'p-3 bg-white rounded border border-gray-300';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'flex justify-between items-center mb-2';
+                    
+                    const title = document.createElement('h4');
+                    title.className = 'font-semibold text-blue-700';
+                    title.textContent = playlist.name;
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-playlist-btn text-red-500 hover:text-red-700 text-xs font-medium';
+                    deleteBtn.textContent = 'Eliminar';
+                    deleteBtn.dataset.playlistId = playlist.id;
+                    
+                    header.appendChild(title);
+                    header.appendChild(deleteBtn);
+                    
+                    const songList = document.createElement('ul');
+                    songList.className = 'list-disc list-inside space-y-1 text-sm text-gray-600';
+                    
+                    if (playlist.songIds.length === 0) {
+                        songList.innerHTML = '<li class="text-gray-400 italic">Esta lista está vacía.</li>';
+                    } else {
+                        playlist.songIds.forEach(songId => {
+                            const song = audioLibrary.find(s => s.id === songId);
+                            const li = document.createElement('li');
+                            li.textContent = song ? song.name : 'Canción no encontrada';
+                            songList.appendChild(li);
+                        });
+                    }
+                    
+                    container.appendChild(header);
+                    container.appendChild(songList);
+                    playlistListContainer.appendChild(container);
+                });
+            }
+
+
+            // --- LÓGICA DEL CALENDARIO ---
+
+            prevMonthBtn.addEventListener('click', () => changeMonth(-1));
+            nextMonthBtn.addEventListener('click', () => changeMonth(1));
+
+            function changeMonth(offset) {
+                currentDate.setMonth(currentDate.getMonth() + offset, 1); // Ir al día 1 para evitar saltos
+                renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            }
+
+            function renderCalendar(year, month) {
+                calendarGrid.innerHTML = ''; // Limpiar calendario
+                const monthName = currentDate.toLocaleString('es-ES', { month: 'long' });
+                monthYearHeader.textContent = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${year}`;
+                
+                const firstDayOfMonth = new Date(year, month, 1);
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                // 0 = Domingo, 1 = Lunes. Ajustamos para que Lunes sea 0.
+                let startDayOfWeek = firstDayOfMonth.getDay();
+                if (startDayOfWeek === 0) startDayOfWeek = 6; // Domingo
+                else startDayOfWeek -= 1; // Lunes a Sábado
+
+                const today = new Date();
+                const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                
+                // Días del mes anterior (padding)
+                const daysInPrevMonth = new Date(year, month, 0).getDate();
+                for (let i = startDayOfWeek - 1; i >= 0; i--) {
+                    const day = daysInPrevMonth - i;
+                    const prevMonthDate = new Date(year, month - 1, day);
+                    calendarGrid.appendChild(createDayElement(day, prevMonthDate.getFullYear(), prevMonthDate.getMonth(), false));
+                }
+
+                // Días del mes actual
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const isToday = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}` === todayStr;
+                    calendarGrid.appendChild(createDayElement(day, year, month, true, isToday));
+                }
+                
+                // Días del mes siguiente (padding)
+                const remainingCells = 42 - (startDayOfWeek + daysInMonth); // 6 filas * 7 días
+                for (let i = 1; i <= remainingCells; i++) {
+                     const nextMonthDate = new Date(year, month + 1, i);
+                     calendarGrid.appendChild(createDayElement(i, nextMonthDate.getFullYear(), nextMonthDate.getMonth(), false));
+                }
+            }
+
+            function createDayElement(day, year, month, isCurrentMonth, isToday = false) {
+                const dayWrapper = document.createElement('div');
+                dayWrapper.className = 'calendar-day relative w-full h-16 md:h-20 p-2 border border-gray-100 rounded-lg cursor-pointer';
+                
+                if (!isCurrentMonth) {
+                    dayWrapper.classList.add('other-month');
+                } else {
+                     dayWrapper.onclick = () => handleDayClick(day, month, year);
+                }
+                
+                if (isToday && isCurrentMonth) {
+                    dayWrapper.classList.add('today');
+                }
+                
+                const dayNumber = document.createElement('span');
+                dayNumber.textContent = day;
+                dayNumber.className = 'text-sm font-medium';
+                dayWrapper.appendChild(dayNumber);
+
+                // Comprobar si hay eventos programados para este día
+                /* const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`; */ /* No longer needed here */
+                if (isCurrentMonth && checkDayForSchedules(new Date(year, month, day))) {
+                    const eventDot = document.createElement('div');
+                    eventDot.className = 'calendar-day-event';
+                    dayWrapper.appendChild(eventDot);
+                }
+                
+                return dayWrapper;
+            }
+            
+            function handleDayClick(day, month, year) {
+                const clickedDate = new Date(year, month, day);
+                const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                // 1. Reproducir audios programados
+                playAudiosForDay(clickedDate);
+                
+                // 2. Abrir el modal de configuración
+                openScheduleModal(isoDate, clickedDate);
+            }
+            
+            
+            // --- LÓGICA DE REPRODUCCIÓN (WEB AUDIO API) ---
+
+            /* REMOVED: Old function */
+            /* function stopAllScheduledAudios() { ... } */
+
+            /**
+             * Comprueba todos los horarios y reproduce los que coincidan con la fecha dada.
+             * @param {Date} date - El día en el que se hizo clic.
+             */
+            function playAudiosForDay(date) {
+                if (!audioContext) {
+                    console.warn("AudioContext no está listo.");
+                    return;
+                }
+                
+                // MODIFIED: Detener cualquier reproducción anterior del reproductor principal
+                stopMainPlayerPlayback();
+
+                /* MODIFIED: New playback logic based on priority */
+                
+                const clickedDayOfWeek = date.getDay(); // 0=Dom, 1=Lun...
+                const clickedDateOfMonth = date.getDate();
+                
+                /* --- MODIFIED: Timezone Bug Fix --- */
+                // Usar el mismo método local-safe que en el resto de la app
+                const clickedISODate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                /* const clickedISODate = date.toISOString().split('T')[0]; // OLD BUGGY LINE */
+                
+                let scheduleToPlay = null;
+
+                // 1. Buscar coincidencia "once" (máxima prioridad)
+                if (schedules[clickedISODate] && schedules[clickedISODate].type === 'once') {
+                    scheduleToPlay = schedules[clickedISODate];
+                } else {
+                    // 2. Buscar coincidencias "weekly" y "monthly"
+                    let weeklyMatch = null;
+                    let monthlyMatch = null;
+                    
+                    for (const schedule of Object.values(schedules)) {
+                        // --- FIX for Timezone Bug ---
+                        // Parsear la fecha guardada como local, no como UTC
+                        const parts = schedule.date.split('-'); 
+                        const configDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                        /* const configDate = new Date(schedule.date); // OLD BUGGY LINE */
+                        
+                        if (schedule.type === 'weekly' && configDate.getDay() === clickedDayOfWeek) {
+                            weeklyMatch = schedule;
+                        }
+                        if (schedule.type === 'monthly' && configDate.getDate() === clickedDateOfMonth) {
+                            monthlyMatch = schedule;
+                        }
+                    }
+                    
+                    // 3. Asignar prioridad (Weekly > Monthly)
+                    scheduleToPlay = weeklyMatch || monthlyMatch;
+                }
+
+                // 4. Si no hay nada que reproducir, o es "none", salir
+                if (!scheduleToPlay || scheduleToPlay.playback.type === 'none') {
+                    console.log(`No hay sonidos programados para ${clickedISODate}`);
+                    return;
+                }
+
+                // 5. Construir la lista de reproducción
+                calendarPlaylist = [];
+                isCalendarPlayback = true;
+                currentCalendarSongIndex = 0;
+                isCalendarLooping = scheduleToPlay.loop; // Establecer flag de bucle
+                
+                const playback = scheduleToPlay.playback;
+
+                if (playback.type === 'songs') {
+                    calendarPlaylist = audioLibrary.filter(song => playback.ids.includes(song.id));
+                    console.log(`Reproduciendo ${calendarPlaylist.length} canciones individuales...`);
+                } 
+                else if (playback.type === 'playlist' && playback.playlistId) {
+                    const playlist = playlists[playback.playlistId];
+                    if (playlist) {
+                        calendarPlaylist = audioLibrary.filter(song => playlist.songIds.includes(song.id));
+                        console.log(`Reproduciendo lista "${playlist.name}" (${calendarPlaylist.length} canciones)...`);
+                    } else {
+                        console.warn(`Lista de reproducción con ID ${playback.playlistId} no encontrada.`);
+                        isCalendarPlayback = false;
+                        isCalendarLooping = false;
+                    }
+                }
+
+                // 6. Empezar a reproducir (si hay canciones)
+                if (calendarPlaylist.length > 0) {
+                    playNextCalendarSong();
+                } else {
+                    console.log('La programación encontrada no tiene canciones válidas.');
+                    stopMainPlayerPlayback(); // Limpiar
+                }
+            }
+            
+            /* ADDED: New function to play calendar songs sequentially */
+            function playNextCalendarSong() {
+                // Si no estamos en modo calendario o si la lista se acabó
+                if (!isCalendarPlayback || currentCalendarSongIndex >= calendarPlaylist.length) {
+                    
+                    /* ADDED: Loop logic */
+                    if (isCalendarLooping && calendarPlaylist.length > 0) {
+                        console.log("Fin de la lista, reiniciando (bucle)...");
+                        currentCalendarSongIndex = 0; // Volver al inicio
+                    } else {
+                        console.log("Fin de la lista (sin bucle).");
+                        stopMainPlayerPlayback(); // Limpiar todo
+                        return;
+                    }
+                }
+
+                const song = calendarPlaylist[currentCalendarSongIndex];
+                
+                initMainAudioSource(); // Asegurarse de que el EQ esté conectado
+                mainAudioPlayer.src = song.url;
+                mainAudioPlayer.play();
+                nowPlayingText.textContent = song.name;
+                updatePlayingClass(song.id);
+                
+                // Avanzar al siguiente
+                currentCalendarSongIndex++;
+            }
+
+            
+            /* REMOVED: Old simultaneous playback function */
+            /* async function playSongFiles(songIds) { ... } */
+            
+            /* REMOVED: Obsolete function */
+            /*
+            async function playSongFiles(songIds) {
+                if (!audioContext) return;
+                
+                // Reactivar AudioContext si estaba suspendido (requerido por políticas del navegador)
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+                
+                for (const songId of songIds) {
+                    const song = audioLibrary.find(s => s.id === songId);
+                    if (!song) continue;
+                    
+                    try {
+                        const arrayBuffer = await song.file.arrayBuffer();
+                        // Usamos promesas para decodificar
+                        audioContext.decodeAudioData(arrayBuffer, 
+                            (buffer) => {
+                                const source = audioContext.createBufferSource();
+                                source.buffer = buffer;
+                                
+                                // MODIFIED: Conectar al inicio de la cadena de filtros (Fix 2)
+                                if (bassFilter) {
+                                    source.connect(bassFilter);
+                                } else {
+                                    // Fallback si los filtros fallan
+                                    source.connect(audioContext.destination);
+                                }
+                                
+                                source.start(0);
+                                activeAudioSources.push(source); // Guardar referencia para detener
+                                source.onended = () => {
+                                    // Limpiar de la lista de activos
+                                    activeAudioSources = activeAudioSources.filter(s => s !== source);
+                                };
+                            },
+                            (e) => console.error(`Error decodificando audio ${song.name}:`, e)
+                        );
+                    } catch (e) {
+                        console.error(`Error leyendo archivo ${song.name}:`, e);
+                    }
+                }
+            }
+            */
+            
+            /**
+             * Comprueba si un día tiene *algún* horario que coincida (para el punto indicador).
+             * @param {Date} date
+             */
+            function checkDayForSchedules(date) {
+                const clickedDayOfWeek = date.getDay();
+                const clickedDateOfMonth = date.getDate();
+                
+                // --- FIX for Timezone Bug ---
+                // Construir el ISO date a partir de los componentes locales, no de toISOString()
+                const clickedISODate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                /* const clickedISODate = date.toISOString().split('T')[0]; // OLD BUGGY LINE */
+
+                for (const schedule of Object.values(schedules)) {
+                    
+                    // --- FIX for Timezone Bug ---
+                    // Parsear la fecha guardada como local, no como UTC
+                    const parts = schedule.date.split('-'); 
+                    const configDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                    /* const configDate = new Date(schedule.date); // OLD BUGGY LINE */
+                    
+                    if (schedule.type === 'once' && schedule.date === clickedISODate) return true;
+                    if (schedule.type === 'weekly' && configDate.getDay() === clickedDayOfWeek) return true;
+                    if (schedule.type === 'monthly' && configDate.getDate() === clickedDateOfMonth) return true;
+                }
+                return false;
+            }
+
+
+            // --- LÓGICA DEL MODAL Y FORMULARIO ---
+
+            function openScheduleModal(isoDate, dateObj) {
+                modalTitle.textContent = `Configurar - ${dateObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+                selectedDateInput.value = isoDate;
+                
+                // Limpiar formulario
+                scheduleForm.reset();
+                /* MODIFIED: Populate new selectors */
+                populateSongSelectModal();
+                populatePlaylistSelectModal();
+                
+                // Resetear visibilidad de grupos
+                songsConfigGroup.classList.add('hidden');
+                playlistConfigGroup.classList.add('hidden');
+                
+                // Cargar datos existentes si hay
+                if (schedules[isoDate]) {
+                    const config = schedules[isoDate];
+                    scheduleTypeSelect.value = config.type;
+                    loopPlaybackCheckbox.checked = config.loop;
+                    noteTextInput.value = config.note || '';
+                    reminderTimeInput.value = config.reminderTime || '';
+                    
+                    // Cargar configuración de reproducción
+                    const playback = config.playback;
+                    playbackTypeSelect.value = playback.type;
+                    
+                    if (playback.type === 'songs') {
+                        songsConfigGroup.classList.remove('hidden');
+                        // Seleccionar canciones guardadas
+                        Array.from(songSelectModal.options).forEach(option => {
+                            option.selected = playback.ids.includes(option.value);
+                        });
+                    } else if (playback.type === 'playlist') {
+                        playlistConfigGroup.classList.remove('hidden');
+                        playlistSelectModal.value = playback.playlistId || '';
+                    }
+                    
+                } else {
+                    // Valores por defecto si no hay configuración
+                    playbackTypeSelect.value = 'none';
+                    loopPlaybackCheckbox.checked = false;
+                }
+                
+                scheduleModal.classList.remove('hidden');
+                scheduleModal.classList.add('flex');
+            }
+
+            function closeModal() {
+                scheduleModal.classList.add('hidden');
+                scheduleModal.classList.remove('flex');
+            }
+
+            function saveSchedule(event) {
+                event.preventDefault();
+                
+                const isoDate = selectedDateInput.value;
+                /* MODIFIED: Read new form values */
+                const playbackType = playbackTypeSelect.value;
+                const selectedSongIds = Array.from(songSelectModal.selectedOptions).map(opt => opt.value);
+                const selectedPlaylistId = playlistSelectModal.value;
+                const loop = loopPlaybackCheckbox.checked;
+                
+                const scheduleType = scheduleTypeSelect.value;
+                const noteText = noteTextInput.value.trim();
+                const reminderTime = reminderTimeInput.value;
+                
+                /* MODIFIED: Check if playback is none AND no note exists */
+                if (playbackType === 'none' && noteText === '') {
+                    // Si no hay reproducción Y no hay nota, borramos la configuración
+                    delete schedules[isoDate];
+                    console.log(`Configuración eliminada para ${isoDate}`);
+                } else {
+                    // Guardar o actualizar
+                    schedules[isoDate] = {
+                        date: isoDate, // Guardamos la fecha base de la configuración
+                        type: scheduleType,
+                        /* ADDED: New playback object */
+                        playback: {
+                            type: playbackType,
+                            ids: playbackType === 'songs' ? selectedSongIds : [],
+                            playlistId: playbackType === 'playlist' ? selectedPlaylistId : null
+                        },
+                        loop: loop,
+                        note: noteText,
+                        reminderTime: reminderTime
+                    };
+                    console.log(`Configuración guardada para ${isoDate}:`, schedules[isoDate]);
+                }
+                
+                closeModal();
+                
+                // Volver a dibujar el calendario para actualizar los puntos indicadores
+                renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            }
+
+            // --- Event Listeners del Modal ---
+            closeModalBtn.addEventListener('click', closeModal);
+            scheduleForm.addEventListener('submit', saveSchedule);
+            
+            /* ADDED: Listener for playback type select */
+            playbackTypeSelect.addEventListener('change', (e) => {
+                const type = e.target.value;
+                songsConfigGroup.classList.toggle('hidden', type !== 'songs');
+                playlistConfigGroup.classList.toggle('hidden', type !== 'playlist');
+            });
+            
+            // Cerrar al hacer clic fuera del contenido
+            scheduleModal.addEventListener('click', (e) => {
+                if (e.target === scheduleModal) {
+                    closeModal();
+                }
+            });
+
+            // ADDED: EQ Slider Listeners (Request 3)
+            bassSlider.addEventListener('input', (e) => {
+                if (bassFilter) {
+                    // gain es logarítmico, pero lo ajustamos así por simplicidad
+                    bassFilter.gain.value = parseFloat(e.target.value);
+                }
+            });
+
+            trebleSlider.addEventListener('input', (e) => {
+                if (trebleFilter) {
+                    trebleFilter.gain.value = parseFloat(e.target.value);
+                }
+            });
+
+            // ADDED: Delete Schedule Button Listener (Request 1)
+            deleteScheduleBtn.addEventListener('click', () => {
+                const isoDate = selectedDateInput.value;
+                if (schedules[isoDate]) {
+                    delete schedules[isoDate];
+                    console.log(`Configuración eliminada para ${isoDate}`);
+                }
+                
+                // MODIFIED: Detener audio al eliminar (Fix 1)
+                /* stopAllScheduledAudios(); */ // Old
+                stopMainPlayerPlayback(); // New
+                
+                closeModal();
+                renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            });
+
+            /* ADDED: Reminder Alert Close Button */
+            reminderAlertClose.addEventListener('click', () => {
+                reminderAlert.classList.add('hidden');
+            });
+
+
+            // --- LÓGICA DEL "RELOJ" DE RECORDATORIOS ---
+            
+            function showReminderAlert(note) {
+                reminderAlertText.textContent = note;
+                reminderAlert.classList.remove('hidden');
+            }
+
+            function checkReminders() {
+                const now = new Date();
+                const currentHHMM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                const currentISODate = now.toISOString().split('T')[0];
+                const currentDayOfWeek = now.getDay(); // 0=Dom, 1=Lun...
+                const currentDateOfMonth = now.getDate(); // 1-31
+
+                // console.log(`Checking reminders at ${currentHHMM}...`); // Para depuración
+
+                for (const isoKey in schedules) {
+                    const schedule = schedules[isoKey];
+
+                    // 1. Omitir si no hay recordatorio o si la hora no coincide
+                    if (!schedule.reminderTime || schedule.reminderTime !== currentHHMM) {
+                        continue;
+                    }
+                    
+                    // 2. Omitir si ya se mostró hoy
+                    if (schedule.lastReminderFired === currentISODate) {
+                        continue;
+                    }
+
+                    // 3. Comprobar reglas de repetición
+                    // --- FIX for Timezone Bug ---
+                    // Parsear la fecha guardada como local, no como UTC
+                    const parts = schedule.date.split('-'); 
+                    const configDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                    /* const configDate = new Date(schedule.date); // OLD BUGGY LINE */
+                    
+                    let match = false;
+                    
+                    switch (schedule.type) {
+                        case 'once':
+                            if (schedule.date === currentISODate) match = true;
+                            break;
+                        case 'weekly':
+                            if (configDate.getDay() === currentDayOfWeek) match = true;
+                            break;
+                        case 'monthly':
+                            if (configDate.getDate() === currentDateOfMonth) match = true;
+                            break;
+                    }
+
+                    // 4. ¡Mostrar recordatorio!
+                    if (match) {
+                        console.log(`Disparando recordatorio: ${schedule.note}`);
+                        showReminderAlert(schedule.note);
+                        // Marcar como "visto" para hoy
+                        schedule.lastReminderFired = currentISODate;
+                    }
+                }
+            }
+            
+            // --- INICIO DE LA APLICACIÓN ---
+            renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            /* ADDED: Initial population of playlist UI */
+            renderPlaylists();
+            
+            // Iniciar el reloj de recordatorios (comprueba cada 5 segundos)
+            setInterval(checkReminders, 5000); 
+
+            /* ADDED: Event listener for main player to handle calendar playlist */
+            mainAudioPlayer.addEventListener('ended', () => {
+                if (isCalendarPlayback) {
+                    // Si la canción que terminó era parte de la lista del calendario,
+                    // reproducir la siguiente.
+                    playNextCalendarSong();
+                } else {
+                    // Si era una canción normal de la biblioteca, solo limpiar.
+                    nowPlayingText.textContent = 'Nada';
+                    updatePlayingClass(null);
+                }
+            });
+
+        });
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
