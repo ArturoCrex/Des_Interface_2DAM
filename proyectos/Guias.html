@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Albion Online Guides - El Compendio</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        albion: {
+                            orange: '#E67E22', // Naranja principal
+                            darkOrange: '#D35400',
+                            lightOrange: '#F39C12',
+                            bgDark: '#1a1a1a',
+                            cardDark: '#2c2c2c',
+                            textLight: '#ecf0f1'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Estilos personalizados para scrollbar y transiciones */
+        body {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 300ms, transform 300ms;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(230, 126, 34, 0.2);
+        }
+        
+        /* Animación simple de entrada */
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-albion-bgDark dark:text-albion-textLight flex flex-col min-h-screen">
+
+    <nav class="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-lg border-b border-albion-orange/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                
+                <div class="flex items-center flex-shrink-0">
+                    <i class="fa-solid fa-shield-halved text-3xl text-albion-orange mr-3"></i>
+                    <span class="font-bold text-xl tracking-wider">ALBION<span class="text-albion-orange">GUIDES</span></span>
+                </div>
+
+                <div class="hidden md:flex space-x-8 items-center ml-10">
+                    <a href="#" onclick="filterGuides('all')" class="hover:text-albion-orange transition-colors font-medium">Inicio</a>
+                    
+                    <div class="relative group">
+                        <button class="flex items-center hover:text-albion-orange transition-colors font-medium focus:outline-none">
+                            <span>Opciones</span>
+                            <i class="fa-solid fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div class="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-left z-50">
+                            <a href="https://forum.albiononline.com/?s=7e64c4e23d0f444b2cff06e99c0f2b9add0597d8" target="_blank" class="block px-4 py-2 text-sm hover:bg-albion-orange hover:text-white">
+                                <i class="fa-solid fa-comments mr-2"></i>Foro Oficial
+                            </a>
+                            <a href="https://www.albion-online-data.com/" target="_blank" class="block px-4 py-2 text-sm hover:bg-albion-orange hover:text-white">
+                                <i class="fa-solid fa-chart-line mr-2"></i>Market Tracker
+                            </a>
+                            <a href="https://albiononline.com/characterbuilder" target="_blank" class="block px-4 py-2 text-sm hover:bg-albion-orange hover:text-white">
+                                <i class="fa-solid fa-hammer mr-2"></i>Builds Meta
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="#newsletter" class="hover:text-albion-orange transition-colors font-medium">Newsletter</a>
+
+                    <a href="https://albiononline.com/news" target="_blank" class="hover:text-albion-orange transition-colors font-medium">
+                        Noticias <i class="fa-solid fa-external-link-alt text-xs ml-1 opacity-70"></i>
+                    </a>
+                </div>
+
+                <div class="flex items-center ml-auto space-x-4">
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none" aria-label="Toggle Dark Mode">
+                        <i class="fa-solid fa-moon text-xl hidden dark:block text-albion-lightOrange"></i>
+                        <i class="fa-solid fa-sun text-xl block dark:hidden text-albion-darkOrange"></i>
+                    </button>
+                    
+                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-md focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" onclick="filterGuides('all')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-albion-orange hover:text-white">Inicio</a>
+                <a href="#newsletter" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-albion-orange hover:text-white">Newsletter</a>
+                <div class="px-3 py-2 text-gray-500 font-bold text-xs uppercase">Herramientas</div>
+                <a href="https://forum.albiononline.com/?s=7e64c4e23d0f444b2cff06e99c0f2b9add0597d8" target="_blank" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-albion-orange hover:text-white pl-6">Foro Oficial</a>
+                <a href="https://www.albion-online-data.com/" target="_blank" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-albion-orange hover:text-white pl-6">Market Tracker</a>
+                <a href="https://albiononline.com/news" target="_blank" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-albion-orange hover:text-white mt-2 border-t border-gray-700">Noticias Oficiales</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-12 border-b-4 border-albion-orange">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Domina el Mundo de Albion</h1>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">Guías esenciales para recolección, PvP, economía y construcción de islas. Tu aventura comienza aquí.</p>
+            
+            <div class="mt-8 flex flex-wrap justify-center gap-2" id="category-filters">
+                <button onclick="filterGuides('all')" class="filter-btn active px-4 py-1 rounded-full border border-albion-orange bg-albion-orange text-white text-sm font-semibold uppercase tracking-wide hover:bg-albion-darkOrange transition-colors focus:outline-none">
+                    Ver Todo
+                </button>
+                <button onclick="filterGuides('PvP')" class="filter-btn px-4 py-1 rounded-full border border-albion-orange text-albion-orange hover:bg-albion-orange hover:text-white text-sm font-semibold uppercase tracking-wide transition-colors focus:outline-none">
+                    PvP
+                </button>
+                <button onclick="filterGuides('Economía')" class="filter-btn px-4 py-1 rounded-full border border-albion-orange text-albion-orange hover:bg-albion-orange hover:text-white text-sm font-semibold uppercase tracking-wide transition-colors focus:outline-none">
+                    Economía
+                </button>
+                <button onclick="filterGuides('PvE')" class="filter-btn px-4 py-1 rounded-full border border-albion-orange text-albion-orange hover:bg-albion-orange hover:text-white text-sm font-semibold uppercase tracking-wide transition-colors focus:outline-none">
+                    PvE
+                </button>
+                <button onclick="filterGuides('Gestión')" class="filter-btn px-4 py-1 rounded-full border border-albion-orange text-albion-orange hover:bg-albion-orange hover:text-white text-sm font-semibold uppercase tracking-wide transition-colors focus:outline-none">
+                    Gestión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div id="guides-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+    </main>
+
+    <section id="newsletter" class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-16 transition-colors duration-300">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <div class="inline-block p-3 rounded-full bg-albion-orange/10 mb-4">
+                <i class="fa-regular fa-paper-plane text-3xl text-albion-orange"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                No te pierdas ninguna guía
+            </h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-8 text-lg max-w-2xl mx-auto">
+                Únete a nuestra comunidad y recibe directamente en tu correo las últimas builds meta, cambios en el mercado negro y estrategias de PvP.
+            </p>
+            
+            <form class="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto" onsubmit="handleSubscribe(event)" action="https://formsubmit.co/arturo.vaquero@educa.madrid.org" method="POST">
+                <input type="text" name="_honey" style="display:none">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+
+                <div class="w-full sm:w-1/3 relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-regular fa-user text-gray-400"></i>
+                    </div>
+                    <input type="text" name="name" placeholder="Tu Nombre" required
+                        class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-albion-orange focus:border-transparent outline-none transition-all placeholder-gray-400 dark:placeholder-gray-500">
+                </div>
+                
+                <div class="w-full sm:w-1/3 relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-regular fa-envelope text-gray-400"></i>
+                    </div>
+                    <input type="email" name="email" placeholder="Tu Gmail" required
+                        class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-albion-orange focus:border-transparent outline-none transition-all placeholder-gray-400 dark:placeholder-gray-500">
+                </div>
+                    
+                <button type="submit" id="subscribe-btn"
+                    class="w-full sm:w-auto px-8 py-3 rounded-lg bg-albion-orange text-white font-bold hover:bg-albion-darkOrange transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                    <span>Suscribirse</span>
+                    <i class="fa-solid fa-arrow-right text-sm"></i>
+                </button>
+            </form>
+            <p class="text-xs text-gray-500 mt-4">
+                Prometemos no enviar spam. Solo contenido de calidad de Albion Online.
+            </p>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 text-gray-400 py-8 border-t border-albion-darkOrange">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <span class="font-bold text-white text-lg">ALBION<span class="text-albion-orange">GUIDES</span></span>
+                <p class="text-sm mt-1">Hecho por fans para fans.</p>
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="hover:text-albion-orange transition-colors"><i class="fa-brands fa-discord text-xl"></i></a>
+                <a href="#" class="hover:text-albion-orange transition-colors"><i class="fa-brands fa-twitter text-xl"></i></a>
+                <a href="#" class="hover:text-albion-orange transition-colors"><i class="fa-brands fa-youtube text-xl"></i></a>
+            </div>
+        </div>
+        <div class="text-center text-xs mt-6 text-gray-600">
+            <p>&copy; 2023 Albion Guides. Todos los derechos reservados. Albion Online es una marca registrada de Sandbox Interactive GmbH.</p>
+        </div>
+    </footer>
+
+    <div id="guide-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-black bg-opacity-75 transition-opacity backdrop-blur-sm" id="modal-overlay"></div>
+
+        <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-albion-orange">
+                
+                <div class="absolute top-0 right-0 pt-4 pr-4 z-10">
+                    <button type="button" onclick="closeModal()" class="rounded-md bg-white dark:bg-gray-800 text-gray-400 hover:text-albion-orange focus:outline-none">
+                        <span class="sr-only">Cerrar</span>
+                        <i class="fa-solid fa-xmark text-2xl"></i>
+                    </button>
+                </div>
+
+                <div class="h-48 w-full overflow-hidden">
+                    <img id="modal-image" src="" alt="Guide Image" class="w-full h-full object-cover">
+                </div>
+
+                <div class="px-6 py-6">
+                    <h3 class="text-2xl font-semibold leading-6 text-gray-900 dark:text-white mb-2" id="modal-title">Título de la Guía</h3>
+                    <p class="text-sm text-albion-orange font-bold uppercase tracking-wide mb-4" id="modal-subtitle">Categoría</p>
+                    
+                    <div class="mt-2 text-gray-600 dark:text-gray-300 space-y-4 overflow-y-auto max-h-96 pr-2" id="modal-content">
+                        </div>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-gray-900 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button type="button" onclick="closeModal()" class="inline-flex w-full justify-center rounded-md bg-albion-orange px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-albion-darkOrange sm:ml-3 sm:w-auto transition-colors">
+                        Entendido
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Lógica del Newsletter (ACTUALIZADA CON ENVÍO REAL) ---
+        function handleSubscribe(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('subscribe-btn');
+            const originalContent = btn.innerHTML;
+            const form = event.target;
+            const nameInput = form.querySelector('input[name="name"]');
+            
+            // 1. Estado de carga (UI)
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Enviando...';
+            btn.classList.add('opacity-75');
+
+            // 2. Preparar datos para enviar
+            const formData = new FormData(form);
+
+            // 3. Enviar usando fetch a FormSubmit (AJAX)
+            fetch("https://formsubmit.co/ajax/arturo.vaquero@educa.madrid.org", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 4. Éxito Visual
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Listo!';
+                    btn.classList.remove('bg-albion-orange', 'hover:bg-albion-darkOrange');
+                    btn.classList.add('bg-green-600', 'hover:bg-green-700');
+                    
+                    setTimeout(() => {
+                        alert(`¡Gracias ${nameInput.value}! Tu suscripción ha sido enviada correctamente.`);
+                        
+                        // Resetear formulario y botón
+                        form.reset();
+                        btn.innerHTML = originalContent;
+                        btn.classList.add('bg-albion-orange', 'hover:bg-albion-darkOrange');
+                        btn.classList.remove('bg-green-600', 'hover:bg-green-700', 'opacity-75');
+                        btn.disabled = false;
+                    }, 500);
+                } else {
+                    throw new Error('Error en el envío');
+                }
+            })
+            .catch(error => {
+                alert("Hubo un error al enviar el formulario. Por favor intenta de nuevo.");
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                btn.classList.remove('opacity-75');
+            });
+        }
+
+        // --- Datos de las Guías (CONTENIDO EXPANDIDO) ---
+
+        const guidesData = [
+            
+            {
+                id: 1,
+                title: "La Ruta del Recolector Maestro",
+                subtitle: "Economía / Gathering",
+                tags: ["Economía", "Gathering"],
+                image: "https://img.youtube.com/vi/VImSN_Kj3tk/maxresdefault.jpg",
+                content: `
+                    <p class="mb-4">Convertirse en un recolector de Tier 8 no es tarea fácil. Requiere paciencia, conocimiento del mapa y una gestión impecable del riesgo. Esta guía detallada te llevará desde principiante hasta experto.</p>
+                    
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">1. Preparación y Consumibles</h4>
+                    <p class="mb-2">Nunca salgas a recolectar sin estar preparado. Tu inventario debe contener siempre:</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li><strong>Pastel de Cerdo (Tier 7):</strong> Aumenta tu carga máxima y tu rendimiento de recolección en un 15%. Es vital para la rentabilidad.</li>
+                        <li><strong>Cuadernos de Recolector (Journals):</strong> Lleva siempre cuadernos vacíos del mismo tier que estás recolectando. Al llenarlos, puedes vendérselos a los trabajadores en las islas por un ingreso extra pasivo.</li>
+                        <li><strong>Poción de Gigante o Invisibilidad:</strong> Tu salvavidas contra gankers. La de gigante te da salud extra para resistir el burst inicial, la de invisibilidad te permite reposicionarte.</li>
+                    </ul>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">2. Equipo de Escape (Anti-Gank)</h4>
+                    <p class="mb-2">Morir significa perder horas de trabajo. Usa este set para maximizar supervivencia:</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li><strong>Arma:</strong> Sangrador (Bloodletter) con Niebla (Mistcaller). La habilidad 'Dash' te da movilidad extra.</li>
+                        <li><strong>Casco de Minero:</strong> Habilidad 'Canción de Trabajo'. Te vuelve inmune al control de masas (CC) temporalmente.</li>
+                        <li><strong>Chaqueta de Asesino:</strong> 'Emboscada' te hace invisible. Úsala para esperar a que se reinicien tus botas.</li>
+                        <li><strong>Botas de Minero:</strong> 'Huida'. Aumenta drásticamente tu velocidad de movimiento pero te silencia. Úsala como último recurso para llegar a una salida.</li>
+                        <li><strong>Montura:</strong> Ciervo Gigante (barato y buena carga) o Jabalí Espectral (si tienes presupuesto, su pasiva te oculta si desmontan).</li>
+                    </ul>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">3. Estrategia de Zonas</h4>
+                    <p>La regla de oro: <strong>Aléjate de los caminos</strong>. Los gankers patrullan las rutas principales.</p>
+                    <p>Avanza siempre por los bordes del mapa. Si ves un nombre rojo en el borde de la pantalla, monta inmediatamente y ve en dirección contraria. No esperes a ver qué equipo lleva.</p>
+                `
+            },
+            {
+                id: 2,
+                title: "Dominando las Solo Dungeons con Hachas",
+                subtitle: "PvE / Combat",
+                tags: ["PvE", "Combat"],
+                image: "https://img.youtube.com/vi/VImSN_Kj3tk/maxresdefault.jpg",
+                content: `
+                    <p class="mb-4">Las mazmorras en solitario siguen siendo una fuente sólida de fama y plata segura. El árbol de Hachas ofrece la limpieza más rápida del juego gracias a su daño en área (AoE) y autosuficiencia.</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">La Build Definitiva (Speed Clear)</h4>
+                    <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-4">
+                        <ul class="space-y-2">
+                            <li><strong>Arma:</strong> Gran Hacha (Greataxe). Su 'E' (Torbellino) limpia grupos enteros de mobs mientras te mueves.</li>
+                            <li><strong>Casco:</strong> Capucha de Erudito. Habilidad 'Escudo de Energía'. Te da resistencia y recupera maná infinito cada vez que te golpean.</li>
+                            <li><strong>Armadura:</strong> Chaqueta de Mercenario. Habilidad 'Sifón de Sangre'. Actívala justo antes de usar el Torbellino en un grupo grande para curarte de 0 a 100% en segundos.</li>
+                            <li><strong>Botas:</strong> Sandalias Reales (para daño/cooldown) o Botas de Soldado (para supervivencia con 'Sprint Rejuvenecedor').</li>
+                            <li><strong>Capa:</strong> Thetford. Su rayo en cadena acelera mucho la limpieza de pulls pequeños.</li>
+                        </ul>
+                    </div>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Rotación de Habilidades</h4>
+                    <p class="mb-2">1. Corre y agrupa (aggrea) a todos los mobs que puedas aguantar.</p>
+                    <p class="mb-2">2. Usa la <strong>W (Adrenalina)</strong> para aumentar tu daño y velocidad.</p>
+                    <p class="mb-2">3. Si tu vida baja del 60%, activa la <strong>R (Chaqueta)</strong>.</p>
+                    <p class="mb-4">4. Lanza la <strong>E (Torbellino)</strong> sobre el grupo. Verás tu vida subir al máximo mientras los mobs desaparecen.</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Consejo Pro: Mapas Encantados</h4>
+                    <p>No hagas mazmorras naturales (las que encuentras por el mundo). Compra mapas Tier 7 o Tier 8 planos o .1 en el mercado. La recompensa de botín y fama es muy superior y puedes abrirlos desde la seguridad de la ciudad (invocan la entrada en zonas adyacentes).</p>
+                `
+            },
+            {
+                id: 3,
+                title: "Manual del Ganker: Mundo Abierto",
+                subtitle: "PvP / Mundo Abierto",
+                tags: ["PvP", "Ganqueo"],
+                image: "https://img.youtube.com/vi/VImSN_Kj3tk/maxresdefault.jpg",
+                content: `
+                    <p class="mb-4">El Ganqueo es un arte que requiere coordinación. Un grupo de gankers desorganizado dejará escapar a sus presas. Aquí analizamos los roles y la ejecución perfecta.</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Composición del Grupo (Party de 5-7)</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-2">
+                        <li><strong>El Catcher (Atrapador):</strong> Usa Garras (Claws) o Bastón de Doble Filo. Su único trabajo es desmontar y retener. Debe llevar botas de gran movilidad.</li>
+                        <li><strong>El DPS de Rango:</strong> Arco de Guerra o Ballesta Ligera. Aplica daño constante mientras la presa huye y evita que remonte.</li>
+                        <li><strong>El Ejecutor:</strong> Sangrador (Bloodletter). Su trabajo es usar la 'E' cuando el enemigo está por debajo del 40% de vida para asegurar la kill.</li>
+                        <li><strong>El Soporte/CC:</strong> Bastón de Hielo o Maza Pesada. Aplica ralentizaciones y purga los buffos de velocidad del enemigo (con Casco de Demonio).</li>
+                    </ul>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">La Maniobra de "Dismount"</h4>
+                    <p class="mb-2">No gastes todos tus recursos al ver al enemigo. Sigue estos pasos:</p>
+                    <ol class="list-decimal pl-5 mb-4 space-y-1">
+                        <li>El Catcher se adelanta e intenta desmontar con veneno y ataques básicos.</li>
+                        <li>Una vez desmontado, NO uses tus stuns inmediatamente si el enemigo tiene sus habilidades activas.</li>
+                        <li>Espera a que use sus botas o chaqueta defensiva. En ese momento, usa la purga (Casco de Mago/Demonio) y aplica el control de masas (CC).</li>
+                        <li>Bloquea las salidas del mapa (zonas de cambio de zona) posicionando a un miembro del equipo allí.</li>
+                    </ol>
+                    <p><strong>Nota importante:</strong> Repartid el botín equitativamente al final de la sesión para mantener la moral del grupo alta.</p>
+                `
+            },
+            {
+                id: 4,
+                title: "Mercado Negro: La Ruta de la Riqueza",
+                subtitle: "Economía / Caerleon",
+                tags: ["Economía", "Mercado"],
+                image: "https://img.youtube.com/vi/VImSN_Kj3tk/maxresdefault.jpg",
+                content: `
+                    <p class="mb-4">El Mercado Negro (Black Market) es una mecánica única de Albion. Los monstruos "compran" su equipo aquí. Cuando un jugador mata a un mob y cae un item, ese item fue comprado previamente en el Mercado Negro de Caerleon.</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Cómo Funciona el Algoritmo</h4>
+                    <p class="mb-4">Si el Mercado Negro necesita un objeto y no hay ofertas de venta, subirá el precio de compra. Esto crea oportunidades de arbitraje masivas donde puedes vender items por 2x o 3x su valor normal.</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Estrategia de Transporte (Royal a Caerleon)</h4>
+                    <p class="mb-2">El dinero está en mover items desde las ciudades reales (Lymhurst, Martlock, etc.) hacia Caerleon, cruzando la Zona Roja.</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li><strong>El Escaneo:</strong> Revisa precios de items Tier 4, 5 y 6 (no encantados o .1). Busca bolsas, capas y armaduras de placas. Suelen tener alta demanda.</li>
+                        <li><strong>La Montura:</strong> Usa un Oso de Guerra o un Jabalí de Élite. Son tankys y difíciles de desmontar. Evita el Buey, es demasiado lento y blanco fácil.</li>
+                        <li><strong>El Scout:</strong> NUNCA transportes millones sin un explorador. Pídele a un amigo que vaya 1 o 2 mapas adelante desnudo o con equipo barato para avisarte de gankers en las entradas (blobs rojos).</li>
+                    </ul>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Consejo de Venta</h4>
+                    <p>No uses "Vender Inmediatamente" a menos que el margen sea enorme. Pon órdenes de venta. El Mercado Negro compra constantemente, tu orden se completará en cuestión de minutos u horas, dándote un 20-30% más de beneficio.</p>
+                `
+            },
+            {
+                id: 5,
+                title: "Gestión de Islas: Gremio vs Personal",
+                subtitle: "Gestión / Housing",
+                tags: ["Gestión", "Economía"],
+                image: "https://img.youtube.com/vi/VImSN_Kj3tk/maxresdefault.jpg",
+                content: `
+                    <p class="mb-4">Las islas son tu base de operaciones y una fuente de ingresos pasivos crucial. Entender la diferencia entre una isla personal y una de gremio es vital para tu economía a largo plazo.</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Isla Personal: Agricultura y Cría</h4>
+                    <p class="mb-2">Tu isla personal es el único lugar donde puedes tener <strong>Parcelas de Cultivo</strong>.</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li><strong>Foco Diario:</strong> Usa tus 10,000 de foco diario para regar cultivos o nutrir animales. Esto devuelve semillas/crías, haciendo la actividad autosostenible.</li>
+                        <li><strong>Especialización:</strong> Céntrate en UNA cosa (ej: Zanahorias o Caballos). A mayor especialización, menos foco cuesta regar, permitiéndote regar más parcelas y ganar más plata.</li>
+                        <li><strong>Recomendación:</strong> Sube tu isla al menos a nivel 4 para tener suficientes parcelas que justifiquen el uso del foco.</li>
+                    </ul>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Isla de Gremio: Imperio de Trabajadores</h4>
+                    <p class="mb-2">No necesitas un gremio real. Crea un gremio solo para ti y compra la isla. Estas islas NO tienen parcelas de cultivo, pero tienen mucho más espacio para casas.</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li><strong>Casas T5/T6:</strong> Construye casas y llénalas de trabajadores (ej: Herreros, Flecheros).</li>
+                        <li><strong>El Ciclo:</strong> Compra cuadernos llenos en el mercado, dáselos a tus trabajadores. Al día siguiente te devolverán recursos refinados.</li>
+                        <li><strong>Rentabilidad:</strong> Vende los recursos y los cuadernos vacíos. Es una inversión inicial alta (construir las casas y muebles) pero se paga sola en 2-3 meses y luego es beneficio puro diario.</li>
+                    </ul>
+                `
+            },
+            {
+                id: 6,
+                title: "Corruptas: Dominando el 1vs1",
+                subtitle: "PvP / Competitivo",
+                tags: ["PvP", "PvE"],
+                image: "https://img.youtube.com/vi/VImSN_Kj3tk/maxresdefault.jpg",
+                content: `
+                    <p class="mb-4">Las Mazmorras Corruptas son el pináculo del PvP individual. Aquí no hay zergs, no hay healers externos. Solo tú, tu build y tu habilidad.</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Niveles de Riesgo</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li><strong>Cazador (Azul/Amarilla):</strong> No pierdes equipo al morir. Perfecto para practicar combos y mecánicas. IP Cap bajo.</li>
+                        <li><strong>Acechador (Roja/Negra):</strong> Full loot (pierdes todo). IP Soft-cap alrededor de 1000. Aquí es donde la mayoría farmea plata y fama.</li>
+                        <li><strong>Asesino (Roja/Negra):</strong> El nivel más alto. IP Cap muy alto. Aquí juegan los mejores jugadores y streamers.</li>
+                    </ul>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">El Meta de la Infamia</h4>
+                    <p class="mb-4">La infamia determina tu ranking y la calidad del botín. Para subir infamia, debes matar al otro jugador o romper los cristales para desterrarlo (si juegas 'Rata' o PvE).</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Conceptos de Combate 1v1</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li><strong>Resetear:</strong> Si malgastas tus cooldowns importantes (ej: fallas tu definitiva), corre y resetea la pelea. No te quedes intercambiando golpes básicos.</li>
+                        <li><strong>Inspección:</strong> Tienes 1 segundo al ver al enemigo para inspeccionar su equipo (tecla Y por defecto). Identifica su chaqueta defensiva y sus botas.</li>
+                        <li><strong>Trampas:</strong> Usa los murciélagos y trampas de lava de la mazmorra a tu favor. Empuja al enemigo hacia el daño ambiental.</li>
+                    </ul>
+                `
+            },
+            {
+                id: 7,
+                title: "3 Formas de Conseguir Premium Gratis",
+                subtitle: "Economía / F2P",
+                tags: ["Economía", "Gestión"],
+                image: "https://img.youtube.com/vi/VImSN_Kj3tk/maxresdefault.jpg",
+                content: `
+                    <p class="mb-4">Mantener el Premium con plata del juego es el objetivo de todo jugador Free-to-Play. Con los precios del oro subiendo, necesitas estrategias sólidas. Aquí detallamos las 3 mejores para 2025.</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">1. Refinamiento con Foco (Ingreso Diario)</h4>
+                    <p class="mb-2">Es el método más estable. Requiere Premium inicial (puedes comprar 7 días para empezar).</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li>Elige un recurso (Cuero, Tela, Madera...).</li>
+                        <li>Viaja a la ciudad con bono de refinamiento para ese recurso (ej: Martlock para Pieles).</li>
+                        <li>Compra recurso bruto T4/T5/T6. Refínalo usando FOCO.</li>
+                        <li>Vende el refinado. El foco te devuelve casi el 50% de los materiales, esa es tu ganancia pura.</li>
+                        <li><strong>Clave:</strong> Sube tu especialización. A mayor spec, menos foco gastas, más puedes refinar.</li>
+                    </ul>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">2. Transporte de Corazones de Facción</h4>
+                    <p class="mb-2">Alto riesgo, recompensa masiva.</p>
+                    <p class="mb-2">Compra contratos de corazones en el NPC de Facción. Debes llevarlos a otra ciudad sin ser matado por gankers.</p>
+                    <p class="mb-4">Con un transporte grande (ej: Oso de Guerra) puedes ganar 2-3 millones de plata en un solo viaje de 15 minutos. ¡Cuidado con los mapas rojos!</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">3. Flipping de Mercado (Compra/Venta)</h4>
+                    <p class="mb-2">No necesitas salir de la ciudad.</p>
+                    <p>Busca items populares (ej: Chaqueta de Clérigo T4.1). Pon órdenes de compra (Buy Orders) un 10-15% por debajo del precio de venta. Cuando se completen, véndelos con órdenes de venta (Sell Orders).</p>
+                    <p>Requiere capital inicial pero escala infinitamente.</p>
+                `
+            },
+            {
+                id: 8,
+                title: "Subir Specs al 100/120 Rápido",
+                subtitle: "PvE / Fama",
+                tags: ["PvE", "Combat"],
+                image: "https://img.youtube.com/vi/w6MUQ007XW4/maxresdefault.jpg",
+                content: `
+                    <p class="mb-4">El IP (Item Power) gana peleas. Tener 100 de especialización te da +200 de IP extra, equivalente a llevar equipo 2 tiers superior. Aquí te decimos dónde obtener la mejor fama.</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">1. Static Dungeons (Grupo de 5)</h4>
+                    <p class="mb-2">La mejor fama del juego. Busca mazmorras estáticas en zona negra cerca del portal.</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li>Necesitas una composición meta: Tanque, Healer, Support (Arcano/Hielo) y 2 DPS de área (Ballesta/Hacha).</li>
+                        <li>El tanque agrupa salas enteras. Los DPS las borran en segundos.</li>
+                        <li>Fama: 2-4 Millones por hora.</li>
+                    </ul>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">2. Mists (Nieblas) - Solo Player</h4>
+                    <p class="mb-2">Si juegas solo, las Nieblas de Avalon son tu hogar.</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li>Busca los "Camps" (zonas con objetivos en el mapa).</li>
+                        <li>Mata los mobs y completa el objetivo para obtener un cofre de fama/plata.</li>
+                        <li>Libera las "Hadas Enjauladas" siempre que las veas, dan fama masiva.</li>
+                        <li>Si encuentras una "Abadía de Knightfall" (entrada de mazmorra dentro de la niebla), ENTRA. Es la mejor fama para solo players actualmente.</li>
+                    </ul>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">3. Satchel of Insight (Mochila de Visión)</h4>
+                    <p>Si eres rico en plata pero pobre en fama, equípate una Mochila de Visión de tier alto (8.3 u 8.4). Activa su pasiva. Te costará mucha plata por cada mob que mates, pero aumentarás tu ganancia de fama en un 40-80% adicional.</p>
+                `
+            },
+            {
+                id: 9,
+                title: "Guía Maestra de Guerra de Facciones",
+                subtitle: "PvP / ZvZ",
+                tags: ["PvP", "Economía"],
+                image: "https://img.youtube.com/vi/XG5vUKi9Zms/maxresdefault.jpg",
+                content: `
+                    <p class="mb-4">La Guerra de Facciones permite disfrutar de batallas a gran escala (ZvZ) sin las obligaciones políticas de los gremios de zona negra. Además, es una fuente excelente de ingresos seguros.</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Cómo Empezar</h4>
+                    <p class="mb-2">Ve al NPC de facción en cualquier ciudad real (ej: General de Lymhurst). Alístate y "Abanderate". Ahora eres hostil a las otras ciudades en zonas Amarillas y Rojas.</p>
+                    <p class="mb-4 text-sm text-gray-500 italic">Nota: En zona amarilla solo te noquean (KO), no pierdes equipo. Es seguro para aprender.</p>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Asalto de Bandidos (Bandit Assault)</h4>
+                    <p class="mb-2">Ocurre varias veces al día. Recibirás una notificación global.</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li>Durante 1 hora, todas las zonas rojas son capturables por facciones.</li>
+                        <li>Únete a la "blob" (grupo grande) de tu facción. Simplemente síguelos y captura puestos avanzados (Outposts).</li>
+                        <li>No necesitas matar para ganar puntos. Capturar puestos y estar presente en la zona da puntos pasivos.</li>
+                        <li>Usa una build de soporte (Healer o Locus) si tienes miedo de morir. Serás muy útil y ganarás muchos puntos asistiendo.</li>
+                    </ul>
+
+                    <h4 class="font-bold text-lg text-albion-orange mb-2">Maximizando Ganancias</h4>
+                    <p class="mb-2">Tus puntos de facción se canjean por:</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li><strong>Corazones de Facción:</strong> Para vender o craftear capas.</li>
+                        <li><strong>Cofres de Facción:</strong> Dan libros de fama y plata directa. Son la mejor opción si necesitas subir de nivel tus armas.</li>
+                        <li><strong>Crías de Montura:</strong> Las crías de élite (ej: Cachorro de Lobo Invernal) valen millones, pero son raras en los cofres.</li>
+                    </ul>
+                `
+            }
+        ];
+
+        // --- Renderizado de Tarjetas ---
+        const gridContainer = document.getElementById('guides-grid');
+
+        function renderGuides(filter = 'all') {
+            // Filtrar datos
+            const filteredData = filter === 'all' 
+                ? guidesData 
+                : guidesData.filter(guide => 
+                    guide.tags.some(tag => tag.toLowerCase() === filter.toLowerCase()) || 
+                    guide.subtitle.toLowerCase().includes(filter.toLowerCase())
+                );
+            
+            // Mensaje si no hay resultados
+            if (filteredData.length === 0) {
+                gridContainer.innerHTML = `
+                    <div class="col-span-full text-center py-10 text-gray-500">
+                        <i class="fa-regular fa-folder-open text-4xl mb-3"></i>
+                        <p>No se encontraron guías para esta categoría.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Generar HTML
+            gridContainer.innerHTML = filteredData.map(guide => `
+                <article class="bg-white dark:bg-albion-cardDark rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col card-hover transition-all duration-300 cursor-pointer h-full animate-fade-in" onclick="openModal(${guide.id})">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="${guide.image}" alt="${guide.title}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" onerror="this.src='https://placehold.co/600x400/E67E22/white?text=Albion+Guide'">
+                        <div class="absolute top-0 right-0 bg-albion-orange text-white text-xs font-bold px-3 py-1 m-2 rounded-full shadow-lg">
+                            LEER MÁS
+                        </div>
+                    </div>
+                    <div class="p-5 flex flex-col flex-grow">
+                        <div class="text-xs font-semibold tracking-wide text-albion-orange uppercase mb-1">
+                            ${guide.subtitle}
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+                            ${guide.title}
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 flex-grow">
+                            Haz click para ver la guía completa, detalles de equipamiento y estrategias avanzadas sobre este tema.
+                        </p>
+                        <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-600 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fa-regular fa-clock mr-2"></i> 5 min lectura
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        // --- Lógica de Filtrado Visual ---
+        function filterGuides(category) {
+            renderGuides(category);
+            
+            // Actualizar botones visualmente
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                // Reset estilos
+                btn.classList.remove('bg-albion-orange', 'text-white');
+                btn.classList.add('text-albion-orange');
+                
+                // Aplicar estilo activo si coincide el texto
+                if (btn.innerText.toLowerCase().includes(category.toLowerCase()) || 
+                   (category === 'all' && btn.innerText === 'VER TODO')) {
+                    btn.classList.add('bg-albion-orange', 'text-white');
+                    btn.classList.remove('text-albion-orange');
+                }
+            });
+        }
+
+        // --- Lógica del Modal ---
+        const modal = document.getElementById('guide-modal');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalSubtitle = document.getElementById('modal-subtitle');
+        const modalImage = document.getElementById('modal-image');
+        const modalContent = document.getElementById('modal-content');
+
+        function openModal(id) {
+            const guide = guidesData.find(g => g.id === id);
+            if (!guide) return;
+
+            modalTitle.textContent = guide.title;
+            modalSubtitle.textContent = guide.subtitle;
+            modalImage.src = guide.image;
+            modalImage.onerror = function() { this.src = 'https://placehold.co/600x400/E67E22/white?text=Albion+Guide'; };
+            modalContent.innerHTML = guide.content;
+
+            modal.classList.remove('hidden');
+            // Pequeña animación de entrada
+            setTimeout(() => {
+                modal.firstElementChild.nextElementSibling.classList.add('opacity-100', 'scale-100');
+            }, 10);
+            
+            document.body.style.overflow = 'hidden'; // Evitar scroll de fondo
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cerrar modal al hacer click fuera
+        modalOverlay.addEventListener('click', closeModal);
+        
+        // Cerrar con tecla Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        // --- Lógica Dark Mode ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        // Chequear preferencia guardada o del sistema
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+        } else {
+            htmlElement.classList.remove('dark');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            if (htmlElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+
+        // --- Menú Móvil ---
+        const btnMobile = document.getElementById('mobile-menu-btn');
+        const menuMobile = document.getElementById('mobile-menu');
+
+        btnMobile.addEventListener('click', () => {
+            menuMobile.classList.toggle('hidden');
+        });
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => renderGuides('all'));
+
+    </script>
+</body>
+</html>
