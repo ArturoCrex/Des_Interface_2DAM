@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación del Proyecto - Keep Clon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Estilo para bloques de código genéricos */
+        pre {
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Estilo específico para la consola CMD (Parte 1) */
+        .cmd-terminal {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            overflow-x: auto; /* Para evitar desbordamiento en móviles */
+        }
+
+        .cmd-path { color: #4ec9b0; } /* Color turquesa para la ruta */
+        .cmd-command { color: #dcdcaa; } /* Color amarillo claro para comandos */
+        .cmd-output { color: #cccccc; } /* Color gris para output */
+        .cmd-success { color: #6a9955; } /* Verde para éxitos */
+        .cmd-highlight { color: #569cd6; font-weight: bold; } /* Azul para énfasis */
+        
+        code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Clase auxiliar para imágenes de código */
+        .code-img {
+            width: 100%;
+            height: auto;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-left mb-10 md:mb-12 pb-8 border-b">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Documentación: Keep Clon</h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-4xl">
+                Registro detallado del desarrollo, comandos de consola para la configuración del entorno React + Vite, y evolución de los prompts del proyecto de clonar una aplicación para clase.
+            </p>
+        </header>
+
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center">
+                <span class="bg-gray-900 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 1</span>
+                Configuración del Entorno (Usando la CMD)
+            </h2>
+            
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">1. Creación del Proyecto con Vite</h3>
+                <p class="text-gray-600 mb-4">
+                    Verificamos la versión de Node.js (v24.11.1) y creamos la estructura base del proyecto usando la plantilla de React.
+                    <br><span class="text-orange-600 font-medium">Nota Importante:</span> Se debe añadir <code>--template react</code> a todos los comandos de instalacion relacionados a la version, este comando basicamente hace que podamos instalar todo para la version mas nueva (v24.11.1).
+                </p>
+                <div class="cmd-terminal">
+                    <div><span class="cmd-path">C:\Users\Arturo></span> <span class="cmd-command">node -v</span></div>
+                    <div class="cmd-output">v24.11.1</div>
+                    <br>
+                    <div><span class="cmd-path">C:\Users\Arturo></span> <span class="cmd-command">cd Desktop</span></div>
+                    <br>
+                    <div><span class="cmd-path">C:\Users\Arturo\Desktop></span> <span class="cmd-command">npm create vite@latest keep-clon -- --template react</span></div>
+                    <div class="cmd-output">Need to install the following packages:</div>
+                    <div class="cmd-output">create-vite@8.2.0</div>
+                    <div class="cmd-output">Ok to proceed? (y) y</div>
+                    <br>
+                    <div class="cmd-output">> npx</div>
+                    <div class="cmd-output">> create-vite keep-clon --template react</div>
+                    <br>
+                    <div class="cmd-output">Scaffolding project in C:\Users\Arturo\Desktop\keep-clon...</div>
+                    <div class="cmd-output">Done. Now run:</div>
+                    <br>
+                    <div class="cmd-output">&nbsp;&nbsp;cd keep-clon</div>
+                    <div class="cmd-output">&nbsp;&nbsp;npm install</div>
+                    <div class="cmd-output">&nbsp;&nbsp;npm run dev</div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">2. Instalación de Dependencias y Tailwind CSS</h3>
+                <p class="text-gray-600 mb-4">
+                    Entramos al directorio, instalamos las dependencias base (`npm install`). A continuación, instalamos Tailwind CSS. 
+                    <br><span class="text-orange-600 font-medium">Nota Importante:</span> Se detectaron problemas de compatibilidad con la versión automática de Tailwind, por lo que se forzó la instalación de la versión <code>3.4.17</code> para asegurar estabilidad.
+                </p>
+                <div class="cmd-terminal">
+                    <div><span class="cmd-path">C:\Users\Arturo\Desktop></span> <span class="cmd-command">cd keep-clon</span></div>
+                    <br>
+                    <div><span class="cmd-path">C:\Users\Arturo\Desktop\keep-clon></span> <span class="cmd-command">npm install</span></div>
+                    <div class="cmd-success">added 157 packages, and audited 158 packages in 10s</div>
+                    <br>
+                    <div><span class="cmd-path">C:\Users\Arturo\Desktop\keep-clon></span> <span class="cmd-command">npm install -D tailwindcss@3.4.17 postcss autoprefixer --legacy-peer-deps</span></div>
+                    <div class="cmd-success">added 58 packages, changed 1 package, and audited 244 packages in 4s</div>
+                    <div class="cmd-success">found 0 vulnerabilities</div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">3. Supabase, Iconos y Canvas</h3>
+                <p class="text-gray-600 mb-4">
+                    Instalación de librerías para la base de datos (Supabase), iconos y dibujo.
+                    <br><span class="text-orange-600 font-medium">Solución de error:</span> Debido a un conflicto de dependencias con <code>react-canvas-draw</code> y React 19, se utilizó el flag <code>--legacy-peer-deps</code> para permitir la instalación. Finalmente, abrimos el editor de código.
+                </p>
+                <div class="cmd-terminal">
+                    <div><span class="cmd-path">C:\Users\Arturo\Desktop\keep-clon></span> <span class="cmd-command">npm install @supabase/supabase-js react-icons react-masonry-css react-canvas-draw --legacy-peer-deps</span></div>
+                    <div class="cmd-success">added 23 packages, and audited 186 packages in 3s</div>
+                    <br>
+                    <div><span class="cmd-path">C:\Users\Arturo\Desktop\keep-clon></span> <span class="cmd-command">code .</span></div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-gray-200">
+
+        <main class="space-y-16">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+                    <span class="bg-orange-600 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 2</span>
+                    Historial de Prompts
+                </h2>
+                <p class="text-gray-600">Registro de los prompts usados para la generación de esta aplicacion y una foto de su desarrollo mediante estos.</p>
+            </div>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 1: Estructura Base</h3>
+                <p class="text-gray-600 mb-4">Creación de la estructura base, usando el codigo html de la web original de navegador de Google Keep</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-6">
+                    <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Código del Prompt:</h4>
+                    <pre><code>Actúa como experto en React y Tailwind CSS. Tengo un proyecto React creado con Vite. Quiero migrar un diseño HTML estático a componentes de React. 
+Analiza el código HTML que te pego al final.
+Divide la interfaz en estos componentes: Sidebar, Header, CreateNoteInput, NoteCard, NoteList y Layout.
+Dame el código de cada componente usando Tailwind CSS para los estilos.
+En App.jsx, monta la estructura básica para que se vea igual que el HTML.
+Usa react-icons o FontAwesome para los iconos.
+(Añadir aquí codigo html) </code></pre>
+                </div>
+                <div class="mt-4">
+                    <h4 class="font-semibold text-gray-800 mb-2">Resultado Visual:</h4>
+                    <img src="../FotosDocumentacion/fotos-keep-clon/prompts/Prompt1.png" alt="Resultado Prompt 1" class="rounded-lg border-2 border-orange-200 w-full max-w-lg shadow-md">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 2: Conexion con la base de datos</h3>
+                <p class="text-gray-600 mb-4">Crear la base de datos en Supabase y conectarla a nuestro codigo</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-6">
+                    <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Código del Prompt:</h4>
+                    <pre><code>He decidido usar Supabase como base de datos para alojar todo lo necesario para el programa.
+Dime qué comando npm necesito para instalar el cliente de Supabase (@supabase/supabase-js).
+Dame el código para configurar el cliente en src/supabase/client.js usando variables de entorno (VITE_SUPABASE_URL, etc.).
+Diseño de la Base de Datos: Como Supabase usa SQL, dame el script SQL para crear la tabla notes en el editor de SQL de Supabase. La tabla debe tener:
+id (uuid, primary key).
+user_id (uuid, para saber de quién es la nota).
+title (text).
+content (text, para notas simples).
+type (text: 'text', 'list', 'image', 'drawing').
+is_pinned (boolean).
+color (text).
+list_items (jsonb, para guardar los items del checklist si es una lista).
+created_at (timestamp).
+Crea un Custom Hook useNotes que tenga funciones para leer las notas (SELECT), insertar (INSERT), actualizar (UPDATE) y borrar (DELETE).</code></pre>
+                </div>
+                <div class="mt-4">
+                    <h4 class="font-semibold text-gray-800 mb-2">Resultado Visual:</h4>
+                    <img src="../FotosDocumentacion/fotos-keep-clon/prompts/Prompt2.png" alt="Resultado Prompt 2" class="rounded-lg border-2 border-orange-200 w-full max-w-lg shadow-md">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 3: Aumentar las funcionalidades de la aplicación y conectarlo con la base de datos real</h3>
+                <p class="text-gray-600 mb-4">Pedimos que las notas se creen y la base de datos las guarda, ademas añadimos funcionalidades que tiene la aplicación original, como el modo oscuro o ver en listas.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-6">
+                    <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Código del Prompt:</h4>
+                    <pre><code>Pasemos con la siguiente fase del proyecto:
+Vamos a conectar la lógica con la vista.
+Modifica el componente CreateNoteInput. Haz que sea un formulario controlado (useState) y que al pulsar 'Cerrar' o hacer click fuera, llame a la función addNote de mi hook de Firebase.
+Modifica NoteCard. Haz que los botones de 'Papelera' y 'Fijar' llamen a deleteNote y togglePin respectivamente.
+Implementa la separación visual: En NoteList, filtra las notas para renderizar primero un bloque con las 'Fijadas' y luego otro con las 'Otras', igual que en el HTML original."
+Añade las siguientes funcionalidades:
+Para las notas:
+Añade la capacidad de que las notas tengan recordatorios, etiquetas que creas y le das a las notas, la capacidad de ser archivadas, una zona donde se quedan las notas eliminadas antes de ser eliminadas del todo, la capacidad de poner colores a las notas e imagenes de fondo
+Para la pagina:
+Añade la capacidad de que se vean las notas en lista o en cuadricula, añade la capacidad de extender y plegar el menu principal, que el boton de buscar busque por recordatorios y etiquetas, añade un boton donde habilitar y deshabilitar el modo oscuro () y un boton de actualizar la pagina por si no se muestra nada.
+</code></pre>
+                </div>
+                <div class="mt-4">
+                    <h4 class="font-semibold text-gray-800 mb-2">Resultado Visual:</h4>
+                    <img src="../FotosDocumentacion/fotos-keep-clon/prompts/Promp3.png" alt="Resultado Prompt 3" class="rounded-lg border-2 border-orange-200 w-full max-w-lg shadow-md">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 4: Usar Auth de Google</h3>
+                <p class="text-gray-600 mb-4">Conectamos nuestra app con el servicio de autentificación de Google, permitiendo al usuario logearse.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-6">
+                    <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Código del Prompt:</h4>
+                    <pre><code>Vamos a configurar la seguridad y el login.
+Crea un componente Login que use el método supabase.auth.signInWithOAuth({ provider: 'google' }).
+Por ultimo, crea un AuthProvider (Contexto) para detectar la sesión del usuario (onAuthStateChange).
+IMPORTANTE (Seguridad): Explícame cómo activar las políticas RLS (Row Level Security) en mi tabla notes desde el panel de Supabase. Dame el código SQL de la política para que:
+Los usuarios solo puedan hacer SELECT (ver) sus propias filas (auth.uid() = user_id).
+Los usuarios solo puedan hacer INSERT/UPDATE/DELETE en sus propias filas.
+Actualiza el hook useNotes para que incluya automáticamente el user_id al crear una nota nueva."</code></pre>
+                </div>
+                <div class="mt-4">
+                    <h4 class="font-semibold text-gray-800 mb-2">Resultado Visual:</h4>
+                    <img src="../FotosDocumentacion/fotos-keep-clon/prompts/Prompt4.png" alt="Resultado Prompt 4" class="rounded-lg border-2 border-orange-200 w-full max-w-lg shadow-md">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 5: Boton de desloguearse</h3>
+                <p class="text-gray-600 mb-4">Añadimos la opcion de desloguearse de la aplicación y añadimos el nombre y foto del usuario</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-6">
+                    <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Código del Prompt:</h4>
+                    <pre><code>Vamos a hacer un ultimo cambio y añadir la capacidad de desloguearte de la app, añadelo a arriba a la derecha de la barra de navegacion.</code></pre>
+                </div>
+                <div class="mt-4">
+                    <h4 class="font-semibold text-gray-800 mb-2">Resultado Visual:</h4>
+                    <img src="../FotosDocumentacion/fotos-keep-clon/prompts/Prompt5.png" alt="Resultado Prompt 5" class="rounded-lg border-2 border-orange-200 w-full max-w-lg shadow-md bg-gray-200 h-48 object-cover">
+                </div>
+            </section>
+        </main>
+
+        <hr class="my-12 border-gray-200">
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center">
+                <span class="bg-blue-600 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 3</span>
+                Detalles Importantes y Galería de Código
+            </h2>
+            <p class="text-gray-600 mb-8">
+                Esta sección profundiza en la implementación técnica, mostrando capturas reales del código fuente configurado durante el desarrollo.
+            </p>
+
+            <div class="mb-10">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.1. Configuración Inicial y Entorno</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Información del Proyecto</h4>
+                        <img src="../FotosDocumentacion/fotos-keep-clon/package-jason-important-content.png" alt="package.json" class="code-img">
+                        <p class="text-sm text-gray-500 mt-2">Archivo <code>package.json</code> mostrando el nombre y versión inicial.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Variables de Entorno (Seguridad)</h4>
+                        <div class="space-y-2">
+                            <img src="../FotosDocumentacion/fotos-keep-clon/env-local.png" alt=".env.local file" class="code-img mb-2">
+                            <img src="../FotosDocumentacion/fotos-keep-clon/env-key-pass.png" alt="Supabase Keys" class="code-img">
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">Uso de <code>.env.local</code> para almacenar las claves de API de Supabase de forma segura.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Cliente de Supabase</h4>
+                        <img src="../FotosDocumentacion/fotos-keep-clon/supabase-client.png" alt="Supabase Client Config" class="code-img">
+                        <p class="text-sm text-gray-500 mt-2">Inicialización del cliente de Supabase usando las variables de entorno.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Configuración de Estilos (Tailwind)</h4>
+                        <div class="space-y-2">
+                             <img src="../FotosDocumentacion/fotos-keep-clon/tailwind-config.png" alt="Tailwind Config" class="code-img mb-2">
+                             <img src="../FotosDocumentacion/fotos-keep-clon/postcss-config-data.png" alt="PostCSS Config" class="code-img">
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">Habilitación del modo oscuro en <code>tailwind.config.js</code> y configuración de PostCSS.</p>
+                    </div>
+                </div>
+            </div>
+
+             <div class="mb-10">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.2. Sistema de Autenticación (Context API)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Provider de Autenticación</h4>
+                        <img src="../FotosDocumentacion/fotos-keep-clon/AuthContext-explanation.png" alt="AuthProvider State" class="code-img">
+                        <p class="text-sm text-gray-500 mt-2">Estado global para gestionar al usuario y el estado de carga.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Lógica de Login con Google</h4>
+                        <img src="../FotosDocumentacion/fotos-keep-clon/login-jsx-important-code.png" alt="Login Component Logic" class="code-img">
+                        <p class="text-sm text-gray-500 mt-2">Uso de <code>supabase.auth.signInWithOAuth</code> para el inicio de sesión social.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Integración en App.jsx</h4><!--8-->
+                        <img src="../FotosDocumentacion/fotos-keep-clon/appjsx-imports.png" alt="App.jsx Imports" class="code-img">
+                        <p class="text-sm text-gray-500 mt-2">Importación del <code>AuthProvider</code> y el componente <code>Login</code> en el punto de entrada.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Consumo del Contexto (Header)</h4>
+                        <img src="../FotosDocumentacion/fotos-keep-clon/Header-user-data.png" alt="Header useAuth" class="code-img">
+                        <p class="text-sm text-gray-500 mt-2">Uso del hook <code>useAuth</code> en el Header para mostrar datos del usuario y la opción de salir.</p>
+                    </div>
+                </div>
+            </div>
+
+             <div class="mb-10">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.3. Lógica de Negocio y Estado Global</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Estado de la Interfaz (Layout)</h4>
+                        <img src="../FotosDocumentacion/fotos-keep-clon/LayoutContext-how-it-works.png" alt="LayoutProvider State" class="code-img">
+                        <p class="text-sm text-gray-500 mt-2">Gestión del sidebar, vista de lista/grid, modo oscuro y búsqueda.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Estado del Contenido Principal</h4><!--11-->
+                        <img src="../FotosDocumentacion/fotos-keep-clon/appjsx-important-config.png" alt="MainContent State" class="code-img">
+                        <p class="text-sm text-gray-500 mt-2">Manejo de modales, notificaciones y el hook de notas en el componente principal.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Seguridad: Asignar Propietario</h4>
+                        <img src="../FotosDocumentacion/fotos-keep-clon/hook-dar-id.png" alt="Assign User ID to Note" class="code-img">
+                        <p class="text-sm text-gray-500 mt-2">Al crear una nota, se vincula automáticamente el ID del usuario autenticado.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Sincronización de Datos</h4>
+                        <img src="../FotosDocumentacion/fotos-keep-clon/hook-limpiar-usuario.png" alt="useEffect fetchNotes" class="code-img">
+                        <p class="text-sm text-gray-500 mt-2">Efecto que carga las notas solo cuando existe un usuario y las limpia al cerrar sesión.</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-200">
+            <p class="text-sm text-gray-500">&copy; 2025 Arturo Vaquero Serrano. Todos los derechos reservados.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
