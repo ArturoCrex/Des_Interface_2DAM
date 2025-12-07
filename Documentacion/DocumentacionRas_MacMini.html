@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación | Configuración de Equipos</title>
+    <style>
+        /* --- CONFIGURACIÓN DE VARIABLES (TEMA CLARO SELECCIONADO) --- */
+        :root {
+            /* TEMA CLARO (Variante Elegante) */
+            --bg-body: #FAFAFA;             /* Blanco suave casi papel */
+            --bg-nav: #FFFFFF;
+            --bg-card: #FFFFFF;
+            
+            --text-main: #121212;           /* Negro profundo para alto contraste */
+            --text-secondary: #616161;      /* Gris medio */
+            
+            --accent: #9A7B3E;              /* Oro oscuro */
+            --accent-hover: #7D6330;
+            
+            --border: #E0E0E0;              /* Gris muy claro */
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+            --bg-footer: #F5F5F5;
+            --text-footer: #757575;
+            
+            --code-bg: #F0F0F0;             /* Fondo para bloques de código */
+        }
+
+        /* --- ESTILOS GENERALES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth; /* Desplazamiento suave sin JS */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--accent);
+        }
+
+        /* --- NAVBAR SIMPLIFICADA --- */
+        header {
+            background-color: var(--bg-nav);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .back-link {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            padding: 0.4rem 1rem;
+            border-radius: 2px;
+        }
+
+        .back-link:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* --- LAYOUT DE DOCUMENTACIÓN --- */
+        .docs-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 250px 1fr; /* Sidebar fija | Contenido */
+            gap: 3rem;
+            align-items: start;
+        }
+
+        /* --- SIDEBAR / ÍNDICE --- */
+        aside {
+            position: sticky;
+            top: 100px; /* Ajuste para que no choque con el header */
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 2px;
+            box-shadow: var(--shadow);
+        }
+
+        aside h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        aside ul {
+            list-style: none;
+        }
+
+        aside li {
+            margin-bottom: 0.8rem;
+        }
+
+        aside a {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            display: block;
+            border-left: 2px solid transparent;
+            padding-left: 10px;
+        }
+
+        aside a:hover {
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .content-area {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 3rem;
+            border-radius: 2px;
+            box-shadow: var(--shadow);
+            min-height: 80vh;
+        }
+
+        .doc-header {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 2rem;
+        }
+
+        .doc-header h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .doc-meta {
+            color: var(--accent);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Secciones de contenido */
+        section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px; /* Para que el sticky header no tape el título */
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h2::before {
+            content: '#';
+            color: var(--accent);
+            font-weight: 300;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        /* Bloques de código o ejemplos */
+        .code-block {
+            background-color: var(--code-bg);
+            padding: 1.5rem;
+            border-left: 3px solid var(--accent);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            color: #333;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* Listas dentro del contenido */
+        .content-area ul, .content-area ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .content-area li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Estilo para placeholder de imágenes */
+        .img-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 250px;
+            background-color: #FAFAFA;
+            border: 2px dashed var(--border);
+            border-radius: 4px;
+            margin: 2rem 0;
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .img-placeholder::before {
+            content: '📷 ';
+            margin-right: 8px;
+            font-style: normal;
+        }
+
+        .doc-image {
+            display: block;
+            width: 100%;            /* Ocupa todo el ancho del contenedor */
+            height: 400px;          /* Altura fija para todas las imágenes */
+            object-fit: contain;    /* Ajusta la imagen dentro del contenedor sin recortarla */
+            background-color: #f5f5f5; /* Color de fondo para los espacios vacíos */
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+            margin: 2rem auto;      /* Margen vertical */
+            border: 1px solid var(--border);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            margin-top: 4rem;
+            background-color: var(--bg-footer);
+            color: var(--text-footer);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            .docs-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            aside {
+                position: static;
+                margin-bottom: 1rem;
+            }
+
+            .content-area {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <!-- <div class="logo">ASI Portafolio <span style="font-size: 0.8em; color: var(--text-secondary); font-weight: 300;">| Configuración Raspberry Pi y Mac Mini</span></div> -->
+            <a href="../index.html" class="back-link">← Volver al Panel</a>
+        </nav>
+    </header>
+
+    <div class="docs-container">
+        
+        <!-- SIDEBAR: ÍNDICE -->
+        <aside>
+            <h3>Índice de Contenidos</h3>
+            <nav>
+                <ul>
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#raspberry">1. Configuración Raspberry Pi</a></li>
+                    <li><a href="#macmini">2. Mac Mini</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="content-area">
+            
+            <!-- SECCIÓN: INICIO -->
+            <div class="doc-header" id="inicio">
+                <span class="doc-meta">Guía de Configuración</span>
+                <h1>Documentación de Configuración</h1>
+                <p>
+                    Esta guía detalla paso a paso el proceso de Configuración para los dispositivos Raspberry Pi y Mac Mini utilizados en el aula Ateca.
+                </p>
+            </div>
+
+            <!-- SECCIÓN: RASPBERRY PI -->
+            <section id="raspberry">
+                <h2>1. Configuración Raspberry Pi</h2>
+                
+                <h3>1.1. Conexión y Encendido</h3>
+                <p>
+                    Conectamos la Raspberry Pi al monitor y a la alimentación eléctrica. Presionamos el botón de encendido y esperamos a que inicie el sistema. Una vez mostrada la interfaz de bienvenida, conectamos el ratón para poder interactuar con la interfaz gráfica.
+                </p>
+
+                <!-- IMG_1495 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1495.jpg" alt="Pantalla de bienvenida Welcome to the Raspberry Pi Desktop" class="doc-image">
+
+                <h3>1.2. Configuración Regional</h3>
+                <p>
+                    Se configura la ubicación, lenguaje y zona horaria para que el sistema se muestre en español y la hora sea la correcta.
+                </p>
+
+                <!-- IMG_1496 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1496.jpg" alt="Ventana Set Country con configuración de idioma y zona horaria" class="doc-image">
+
+                <h3>1.3. Creación de Usuario</h3>
+                <p>
+                    Es necesario crear una cuenta de usuario para iniciar sesión. Introducimos el nombre de usuario, contraseña y confirmación de la misma. Se utilizarán las credenciales predeterminadas aportadas por el profesor.
+                </p>
+
+                <!-- IMG_1497 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1497.jpg" alt="Ventana Create User introduciendo nombre y contraseña" class="doc-image">
+
+                <h3>1.4. Conexión a Red WiFi</h3>
+                <p>
+                    Configuramos la red WiFi seleccionando la red del centro especializada para este aula de la lista disponible e introducimos la contraseña correspondiente.
+                </p>
+
+                <!-- IMG_1498 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1498.jpg" alt="Lista de redes WiFi disponibles seleccionando la red del aula" class="doc-image">
+
+                <!-- IMG_1499 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1499.jpg" alt="Ventana introduciendo la contraseña de la red WiFi" class="doc-image">
+
+                <h3>1.5. Selección de Navegador y Actualización</h3>
+                <p>
+                    Elegimos Chromium como navegador predeterminado, manteniendo Firefox instalado. Posteriormente, el sistema preguntará si deseamos actualizar el software. Confirmamos (Next) para que se descarguen e instalen las actualizaciones de idioma y sistema.
+                </p>
+
+                <!-- IMG_1500 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1500.jpg" alt="Ventana Choose Browser seleccionando Chromium" class="doc-image">
+
+                <!-- IMG_1501 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1501.jpg" alt="Ventana Update Software descargando actualizaciones" class="doc-image">
+
+                <p>
+                    Una vez finalizada la actualización, el sistema notificará que está al día. Al pulsar OK, se mostrará el escritorio de la Raspberry Pi listo para usar.
+                </p>
+
+                <!-- IMG_1502 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1506.jpg" alt="Notificación de sistema actualizado y vista del Escritorio final" class="doc-image">
+
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1507.jpg" alt="Notificación de sistema actualizado y vista del Escritorio final" class="doc-image">
+            </section>
+
+            <!-- SECCIÓN: MAC MINI -->
+            <section id="macmini">
+                <h2>2. Configuración Mac Mini</h2>
+
+                <h3>2.1. Configuración Regional e Idioma</h3>
+                <p>
+                    Al iniciar, primero seleccionamos nuestro idioma y región del dispositivo.
+                </p>
+
+                <!-- IMG_1503 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1508.jpg" alt="Pantalla de selección de país o región" class="doc-image">
+
+                <!-- IMG_1504 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1510.jpg" alt="Selección de idioma español" class="doc-image">
+
+                <h3>2.2. Personalización y Accesibilidad</h3>
+                <p>
+                    El sistema pedirá elegir el género para el tratamiento y en la pantalla de Accesibilidad, seleccionamos "Ahora no" si no se requiere ninguna configuración específica.
+                </p>
+
+                <!-- IMG_1505 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1511.jpg" alt="Pantalla de selección de tratamiento (Género)" class="doc-image">
+                
+                <!-- IMG_1506 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1513.jpg" alt="Pantalla de opciones de Accesibilidad" class="doc-image">
+
+                <h3>2.3. Conexión de Red y Privacidad</h3>
+                <p>
+                    Seleccionamos la red WiFi correspondiente e introducimos la contraseña. Tras conectar, aceptamos la pantalla de información sobre "Datos y privacidad".
+                </p>
+
+                <!-- IMG_1507 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1514.jpg" alt="Selección de red WiFi e introducción de contraseña" class="doc-image">
+
+                <!-- IMG_1508 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1515.jpg" alt="Pantalla informativa de Tus datos y la privacidad" class="doc-image">
+
+                <h3>2.4. Migración y Cuenta Apple</h3>
+                <p>
+                    En el "Asistente de Migración", seleccionamos "Ahora no" ya que es una configuración nueva. Cuando se solicite iniciar sesión con una cuenta de Apple, elegimos "Configurar más tarde" y confirmamos "Omitir", ya que no vincularemos una cuenta personal.
+                </p>
+
+                <!-- IMG_1509 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1516.jpg" alt="Asistente de Migración" class="doc-image">
+
+                <!-- IMG_1510 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1517.jpg" alt="Pantalla de inicio de sesión de Apple ID omitida" class="doc-image">
+
+                <h3>2.5. Creación de Cuenta Local</h3>
+                <p>
+                    Aceptamos los Términos y Condiciones. A continuación, creamos una cuenta en el ordenador utilizando el mismo usuario y contraseña asignados por el profesor, con una pista por si a alguien se le olvida la contraseña 
+                </p>
+
+                <!-- IMG_1511 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1520.jpg" alt="Pantalla de aceptación de Términos y Condiciones" class="doc-image">
+
+                <!-- IMG_1512 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1521.jpg" alt="Formulario Crea una cuenta en el ordenador" class="doc-image">
+
+                <h3>2.6. Configuraciones Finales</h3>
+                <p>
+                    Se presentarán varias opciones de configuración rápida:
+                </p>
+                <ul>
+                    <li><strong>Localización:</strong> Seleccionar "No usar localización".</li>
+                    <li><strong>Zona Horaria:</strong> Seleccionar la ubicación actual (Madrid - España).</li>
+                    <li><strong>Análisis:</strong> No compartir análisis con Apple.</li>
+                    <li><strong>Tiempo de uso:</strong> Configurar más tarde.</li>
+                </ul>
+
+                <!-- IMG_1513 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1524.jpg" alt="Configuración de Localización y Zona Horaria" class="doc-image">
+
+                <!-- IMG_1514 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1526.jpg" alt="Pantallas de Análisis y Tiempo de uso" class="doc-image">
+
+                <h3>2.7. Teclado y Periféricos</h3>
+                <p>
+                    Una vez en el escritorio, se iniciará el Asistente de configuración del teclado. Seleccionamos el tipo de teclado ISO. Finalmente, verificamos y conectamos los dispositivos Bluetooth (ratón y teclado) desde la configuración del sistema.
+                </p>
+
+                <!-- IMG_1515 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1531.jpg" alt="Asistente de configuración de teclado (ISO)" class="doc-image">
+
+                <!-- IMG_1516 -->
+                <img src="../Fotos/FotosRasbi_MacMini/IMG_1533.jpg" alt="Panel de configuración Bluetooth con dispositivos conectados" class="doc-image">
+
+            </section>
+
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Arturo Vaquero Serrano. Todos los derechos reservados.</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación | Modelos IA Jetson</title>
+    <style>
+        /* --- CONFIGURACIÓN DE VARIABLES (TEMA CLARO) --- */
+        :root {
+            --bg-body: #FAFAFA;
+            --bg-nav: #FFFFFF;
+            --bg-card: #FFFFFF;
+            
+            --text-main: #121212;
+            --text-secondary: #616161;
+            
+            --accent: #9c27b0; 
+            --accent-hover: #7b1fa2;
+            
+            --border: #E0E0E0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+            --bg-footer: #F5F5F5;
+            --text-footer: #757575;
+            
+            --code-bg: #F0F0F0;
+            --prompt-box: #f3e5f5; 
+        }
+
+        /* --- ESTILOS GENERALES --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+        a { text-decoration: none; color: inherit; transition: color 0.3s ease; }
+        a:hover { color: var(--accent); }
+
+        /* --- NAVBAR --- */
+        header {
+            background-color: var(--bg-nav);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-link {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            padding: 0.4rem 1rem;
+            border-radius: 2px;
+        }
+        .back-link:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* --- LAYOUT --- */
+        .docs-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        /* --- SIDEBAR --- */
+        aside {
+            position: sticky;
+            top: 100px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 2px;
+            box-shadow: var(--shadow);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        aside h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+        aside ul { list-style: none; }
+        aside li { margin-bottom: 0.8rem; }
+        aside a {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            display: block;
+            border-left: 2px solid transparent;
+            padding-left: 10px;
+        }
+        aside a:hover { border-left-color: var(--accent); color: var(--accent); }
+
+        /* --- CONTENIDO --- */
+        .content-area {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 3rem;
+            border-radius: 2px;
+            box-shadow: var(--shadow);
+            min-height: 80vh;
+        }
+        .doc-header {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 2rem;
+        }
+        .doc-header h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+        .doc-meta {
+            color: var(--accent);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        section { margin-bottom: 4rem; }
+        
+        h2, h3 { scroll-margin-top: 100px; }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        h2::before { content: '#'; color: var(--accent); font-weight: 300; }
+        
+        h3 {
+            font-size: 1.2rem;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            font-weight: 600;
+            background-color: #fafafa;
+            padding: 10px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        /* --- ESTILOS DE PROMPTS --- */
+        .prompt-card {
+            background-color: var(--prompt-box);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prompt-text {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+        .answer-text {
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--accent);
+            background: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        /* --- CÓDIGO E IMÁGENES GENÉRICAS --- */
+        .doc-image {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+            margin: 2rem auto;
+            border: 1px solid var(--border);
+        }
+
+        /* --- NUEVO ESTILO: LISTA VERTICAL DE FOTOS --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Una sola columna para que sean verticales */
+            gap: 2rem; 
+            margin-bottom: 2rem;
+        }
+        .gallery-grid .doc-image {
+            height: auto; /* Altura automática para que se vea la foto entera */
+            width: 100%;
+            object-fit: contain;
+            margin: 0;
+            transition: transform 0.2s ease;
+        }
+        /* Efecto hover suave */
+        .gallery-grid .doc-image:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px); /* Pequeña elevación */
+        }
+
+        /* --- BOTÓN DE GRÁFICAS --- */
+        .cta-container {
+            background-color: #f9f9f9;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            border-radius: 4px;
+            margin-top: 3rem;
+        }
+        .btn-accent {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s ease;
+            margin-top: 1rem;
+        }
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
+            color: white;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            margin-top: 4rem;
+            background-color: var(--bg-footer);
+            color: var(--text-footer);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 900px) {
+            .docs-container { grid-template-columns: 1fr; gap: 1.5rem; }
+            aside { position: static; margin-bottom: 1rem; max-height: none; }
+            .content-area { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="../index.html" class="back-link">← Volver al Panel</a>
+        </nav>
+    </header>
+
+    <div class="docs-container">
+        
+        <aside>
+            <h3>Índice de Contenidos</h3>
+            <nav>
+                <ul>
+                    <li><a href="#inicio">Introducción</a></li>
+                    <li><a href="#qwen4b">1. Qwen2-VL-8B</a></li>
+                    <li><a href="#qwen8b">2. Qwen2-VL-8B</a></li>
+                    <li><a href="#liquid">3. Liquid LFM 1.2B</a></li>
+                    <li><a href="#gemma">4. Gemma2-2-9b</a></li>
+                    <li><a href="#prompts">5. Acertijos Propuestos</a></li>
+                    <li><a href="#rendimiento">Gráficas de Datos</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            
+            <div class="doc-header" id="inicio">
+                <span class="doc-meta">Comparativas de modelos de IA en LM Studio</span>
+                <h1>Modelos usados, ejemplos y Comparativas</h1>
+                <p>
+                    Esta documentación detalla los tipos de modelos de IA que hemos usado, los prompts empleados para los test de lógica, ejemplos de uso y una comparativa de rendimiento al final del documento.
+                </p>
+            </div>
+
+            <section id="modelos">
+                <h2>Modelos Probados</h2>
+                <p>
+                    A continuación se detallan los modelos usados, la justificación de su elección y ejemplos de sus respuestas visuales y de texto.
+                </p>
+
+                <h3 id="qwen4b">1. Qwen2-VL-4B</h3>
+                <p>
+                    El modelo Qwen2 de 4 billones de parametros, es un modelo intermedio entre todos los que hemos usado a la hora de hacer las comparativas, de este se esperaba que fuera mas lento, que usara mas tokens y que diera peores respuestas que su contraparte de 8 billones de parametros, este ha resultado ser en algunos casos mejor que su contraparte, ya sea en tokens usados o en su tiempo de respuesta.
+                </p>
+                <div class="gallery-grid">
+                    <img src="../Fotos/FotosComparativasIA/Qwen4/Captura de pantalla 2025-12-04 a las 20.34.17.png" alt="Liquid LFM - Selección" class="doc-image">
+                    <img src="../Fotos/FotosComparativasIA/Qwen4/Captura de pantalla 2025-12-04 a las 20.31.42.png" alt="Liquid LFM - Chat rápido" class="doc-image">
+                    <img src="../Fotos/FotosComparativasIA/Qwen4/Captura de pantalla 2025-12-04 a las 20.18.16.png" alt="Liquid LFM - Consumo recursos" class="doc-image">
+                </div>
+
+                <h3 id="qwen8b">2. Qwen2-VL-8B </h3>
+                <p>
+                    El modelos más pesado en comparación a su contraparte de 4 billones de parametros, este desarrolla las respuestas, revisa sus errores y es compatible con muchos mas datos que otros modelos, el gran desarrollo de las respuestas que da, causa que gaste mas tokens y tarde mas en responder las pregunas, pero ciertamente da respuestas mas correctas
+                </p>
+                <div class="gallery-grid">
+                    <img src="../Fotos/FotosComparativasIA/Qwen8/Captura de pantalla 2025-12-04 a las 20.33.05.png" alt="Qwen 8B - Carga de imagen" class="doc-image">
+                    <img src="../Fotos/FotosComparativasIA/Qwen8/Captura de pantalla 2025-12-04 a las 20.30.27.png" alt="Qwen 8B - Análisis visual" class="doc-image">
+                    <img src="../Fotos/FotosComparativasIA/Qwen8/Captura de pantalla 2025-12-04 a las 20.24.03.png" alt="Qwen 8B - Respuesta compleja" class="doc-image">
+                    <img src="../Fotos/FotosComparativasIA/Qwen8/Captura de pantalla 2025-12-04 a las 20.14.51.png" alt="Qwen 8B - Configuración" class="doc-image">
+                </div>
+
+                <h3 id="liquid">3. Liquid LFM 1.2B</h3>
+                <p>
+                    Es un modelo ligero y rapido, muy bueno para comprar como el entrenamietno y los parametros afectan en mucho a los entrenamientos de IA.
+                </p>
+                <div class="gallery-grid">
+                    <img src="../Fotos/FotosComparativasIA/Liquid/Captura de pantalla 2025-12-04 a las 20.27.41.png" alt="LFM2 - Interfaz" class="doc-image">
+                    <img src="../Fotos/FotosComparativasIA/Liquid/Captura de pantalla 2025-12-04 a las 20.19.19.png" alt="LFM2 - Pregunta lógica" class="doc-image">
+                    <img src="../Fotos/FotosComparativasIA/Liquid/Captura de pantalla 2025-12-04 a las 20.13.25.png" alt="LFM2 - Respuesta código" class="doc-image">
+                </div>
+
+                <h3 id="gemma">4. Gemma2-2-9b</h3>
+                <p>
+                    Es el modelo mas pesado del grupo, con 9 billones de parametros, este es de respuesta rapida pero acertada, al ser de Google los parametros con los que ha sido entrenado es mas cercano a modelos extendidos que ya usamos a dia de hoy de manera común como Gemini.
+                </p>
+                <div class="gallery-grid">
+                    <img src="../Fotos/FotosComparativasIA/Gemma/Captura de pantalla 2025-12-04 a las 20.27.16.png" alt="Gemma - Comparativa visual" class="doc-image">
+                    <img src="../Fotos/FotosComparativasIA/Gemma/Captura de pantalla 2025-12-04 a las 20.26.49.png" alt="Gemma - Chat fluido" class="doc-image">
+                    <img src="../Fotos/FotosComparativasIA/Gemma/Captura de pantalla 2025-12-04 a las 20.20.52.png" alt="Gemma - Métricas" class="doc-image">
+                </div>
+
+                <h2 id="prompts">5. Acertijos Propuestos</h2>
+                <p>
+                    Para obtener los datos para las gráficas y ver como funcionan los modelos, les hemos dado a todas los siguientes acertijos a resolver, esperando a ver cual era su respuesta y tiempo de respuesta, ademas de los tokens que usaba.
+                </p>
+                <p><b>IMPORTANTE: </b> Para los modelos Qwen2-VL-4B y Qwen2-VL-8B se ha hecho una 6 pregunta, comparando cuales eran sus datos si se pedia la solución al quinto problema en una respuesta directa y sin que la piensen más.</p>
+
+                <div class="prompt-card">
+                    <p class="prompt-text">1. El padre de Juan tiene 4 hijos: Lucas, Sandra, Ana y... ¿quién es el cuarto?</p>
+                    <span class="answer-text">Respuesta esperada: Juan</span>
+                </div>
+
+                <div class="prompt-card">
+                    <p class="prompt-text">2. ¿Qué es lo que cuanto más le quitas, más grande se hace?</p>
+                    <span class="answer-text">Respuesta esperada: Un agujero</span>
+                </div>
+
+                <div class="prompt-card">
+                    <p class="prompt-text">3. ¿Qué es algo que es tuyo, pero que los demás usan mucho más que tú?</p>
+                    <span class="answer-text">Respuesta esperada: Tu nombre</span>
+                </div>
+
+                <div class="prompt-card">
+                    <p class="prompt-text">4. Tengo ciudades, pero no casas. Tengo montañas, pero no árboles. Tengo agua, pero no peces. ¿Qué soy?</p>
+                    <span class="answer-text">Respuesta esperada: Un mapa</span>
+                </div>
+
+                <div class="prompt-card">
+                    <p class="prompt-text">5. Antes de ayer, Juan tenía 17 años. El año que viene, tendrá 20. ¿Cómo es esto posible?</p>
+                    <span class="answer-text">Respuesta esperada: Hoy es 1 de enero. (Ayer fue 31 dic y cumplió 18. Este año cumple 19, el próximo 20)</span>
+                </div>
+
+                <div class="cta-container" id="rendimiento">
+                    <h3>Análisis de Rendimiento</h3>
+                    <p>
+                        Aqui esta el proyecto hecho en Looker Studio, una herramienta para hacer gráficas interactivas para representar los datos.
+                    </p>
+                    <a href="https://lookerstudio.google.com/reporting/840e72dd-4cbb-4f72-9737-feeb059c101c" class="btn-accent">Ver Gráficas Comparativas →</a>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Arturo Vaquero Serrano. Todos los derechos reservados.</p>
+    </footer>
+
+</body>
+</html>
