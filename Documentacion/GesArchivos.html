@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación del Proyecto - Gestor de Documentos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        pre {
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .cmd-terminal {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            overflow-x: auto; 
+        }
+
+        .cmd-path { color: #4ec9b0; }
+        .cmd-command { color: #dcdcaa; }
+        .cmd-output { color: #cccccc; }
+        .cmd-success { color: #6a9955; }
+        .cmd-highlight { color: #569cd6; font-weight: bold; }
+        
+        code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Clase existente que usaremos para las capturas */
+        .code-img {
+            width: 100%;
+            height: auto;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+            display: block; /* Asegura comportamiento de bloque */
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-left mb-10 md:mb-12 pb-8 border-b">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Documentación: Gestor de Documentos</h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-4xl">
+                Registro del desarrollo de una aplicación web para gestión, edición y conversión de archivos, usando React, Vite y Supabase.
+            </p>
+        </header>
+
+<section class="mb-20">
+    <h2 class="text-4xl font-bold mb-8 flex items-center">
+        <span class="bg-orange-600 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 1</span>
+        Configuración del Entorno y Pasos Previos
+    </h2>
+
+    <div class="space-y-12">
+
+        <div>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.1 Creación del proyecto con Vite + React</h3>
+            <p class="text-gray-600 mb-5">
+                Si aún no tienes el proyecto, créalo con los comandos oficiales de Vite (plantilla React).
+            </p>
+            <div class="cmd-terminal">
+                <div><span class="cmd-path">~></span> <span class="cmd-command">npm create vite@latest aGravity -- --template react</span></div>
+                <div><span class="cmd-path">~></span> <span class="cmd-command">cd ruta-proyecto</span></div>
+                <div><span class="cmd-path">~/ruta-proyecto></span> <span class="cmd-command">npm install</span></div>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.2 Instalación de dependencias</h3>
+            <p class="text-gray-600 mb-5">
+                Instala las librerías necesarias para todas las funcionalidades de aGravity.
+            </p>
+            <div class="cmd-terminal">
+                <div><span class="cmd-path">~/aGravity></span> <span class="cmd-command">npm install @supabase/supabase-js xlsx heic2any jszip file-saver lucide-react</span></div>
+                <div class="cmd-output"># @supabase/supabase-js → cliente oficial</div>
+                <div class="cmd-output"># xlsx → lectura/escritura Excel</div>
+                <div class="cmd-output"># heic2any → conversión HEIC → JPEG</div>
+                <div class="cmd-output"># jszip + file-saver → creación y descarga de ZIP</div>
+                <div class="cmd-output"># lucide-react → iconos modernos</div>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.3 Configuración de Supabase (.env.local)</h3>
+            <p class="text-gray-600 mb-5">
+                Crea un archivo <code>.env.local</code> en la raíz del proyecto con tus credenciales de Supabase.
+            </p>
+            <div class="cmd-terminal">
+                <div class="cmd-highlight">VITE_SUPABASE_URL=https://tu-proyecto.supabase.co</div>
+                <div class="cmd-highlight">VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</div>
+            </div>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-6">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                1.4 Crear tabla en Supabase (SQL obligatorio)
+            </h3>
+            <p class="text-gray-700 mb-4">
+                Ve a tu proyecto de Supabase → SQL Editor → pega y ejecuta lo siguiente:
+            </p>
+            <pre class="bg-gray-900 text-gray-100 p-5 rounded-lg overflow-x-auto text-sm">
+CREATE TABLE documents (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  user_id UUID REFERENCES auth.users NOT NULL,
+  name TEXT NOT NULL,
+  content TEXT,               -- NULL para binarios (PDF, imágenes, etc.)
+  storage_path TEXT,          -- ruta en bucket 'files' para binarios
+  file_type TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Políticas RLS básicas
+ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Usuarios ven sus propios archivos" ON documents
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Usuarios insertan sus archivos" ON documents
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Usuarios actualizan sus archivos" ON documents
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Usuarios eliminan sus archivos" ON documents
+  FOR DELETE USING (auth.uid() = user_id);
+            </pre>
+            <p class="text-sm text-amber-700 mt-4">
+                También crea un bucket llamado <strong>files</strong> en Storage (público o con RLS según prefieras).
+            </p>
+        </div>
+
+        <div>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.5 Ejecutar el proyecto</h3>
+            <div class="cmd-terminal">
+                <div><span class="cmd-path">~/aGravity></span> <span class="cmd-command">npm run dev</span></div>
+                <div class="cmd-output">Local:    http://localhost:5173</div>
+                <div class="cmd-output">Network:  http://192.168.x.x:5173</div>
+            </div>
+            <p class="text-gray-600 mt-4">
+                Abre el enlace y ya tendrás la aplicación funcionando completamente.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+        <hr class="my-12 border-gray-200">
+
+        <main class="space-y-16">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+                    <span class="bg-red-600 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 2</span>
+                    Historial de Prompts 
+                </h2>
+                <p class="text-gray-600">Evolución paso a paso del proyecto, desde la creación base hasta la versión móvil.</p>
+            </div>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 1: Estructura Base y Editor de Texto</h3>
+                <p class="text-gray-600 mb-4">Creación del proyecto y funcionalidad básica para archivos de texto.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Actúa como un desarrollador experto en front end y backend...
+Quiero crear un proyecto que permite que subas archivos de los diferentes tipos (PDF, JSON, MD, TXT)...
+Crea una pagina principal, donde se seleccionaran diferentes pestañas y haz que esta sea la primera pestaña, solo para archivos de texto.
+Ten en cuenta que se va a subir a supabase...</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resultado Prompt 1:</span>
+                    <img src="../FotosDocumentacion/fotos-GestArch/prompt1.png" style="width:830px; height:430px; object-fit:cover;" alt="Captura Prompt 1" class="code-img">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 2: Soporte Multi-formato (PDF, JSON, MD)</h3>
+                <p class="text-gray-600 mb-4">Implementación de nuevos formatos y almacenamiento en Supabase Storage.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Como siguiente paso vamos a inplementar todas las categorias del proyecto (pdf, json y MD), ademas de hacer que podamos guardar los archivos correctamente en supabase.</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resultado Prompt 2:</span>
+                    <img src="../FotosDocumentacion/fotos-GestArch/prompt2.png" style="width:430px; height:430px; object-fit:cover;" alt="Captura Prompt 2" class="code-img">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 3: Conversores y Organización</h3>
+                <p class="text-gray-600 mb-4">Reorganización de pestañas y herramientas de conversión de datos.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Quiero que para el siguiente paso, organices las pestañas para que sea mas intuitivo, ademas añade opciones para pasar de archivos JSON a CSV y de tabla de excel a CSV.</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resultado Prompt 3:</span>
+                    <img src="../FotosDocumentacion/fotos-GestArch/prompt3.png" style="width:1430px; height:430px; object-fit:cover;" alt="Captura Prompt 3" class="code-img">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 4: Conversor HEIC y Modo Estricto</h3>
+                <p class="text-gray-600 mb-4">Soporte para imágenes HEIC y restricciones en el editor de texto.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Añade una nueva pestaña, esta pestaña sera especialmente para pasar de archivos HEIC a un formato de imagen mucho mas comun y habitual, como jpeg.
+Arregla el formato de editor de texto y haz que solo se puedan abirir archivos que realmente se puedan editar y no pdf por ejemplo.</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resultado Prompt 4:</span>
+                    <img src="../FotosDocumentacion/fotos-GestArch/prompt4.png" style="width:430px; height:430px; object-fit:cover;" alt="Captura Prompt 4" class="code-img">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 5: Dashboard y Sidebar</h3>
+                <p class="text-gray-600 mb-4">Creación de la barra lateral y zona central de "Mis Archivos".</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Reestructura el lector de archivos para que las opciones esten a la izquierda de la aplicación, que en el medio haya una zona grande donde añadir archivos guardados en supabase...</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resultado Prompt 5:</span>
+                    <img src="../FotosDocumentacion/fotos-GestArch/prompt5.png" style="width:430px; height:430px; object-fit:cover;" alt="Captura Prompt 5" class="code-img">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 6: Herramientas Avanzadas</h3>
+                <p class="text-gray-600 mb-4">Editor visual de código, editor hexadecimal, conversor HEIC por lotes y empaquetador ZIP.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Añade las siguientes herramientas: si se abre un archivo con extensión de programación .json,.py,.html, .js o java se tiene que mostrar el archivo con formato visual...
+Añadir un lector Hexadecimal...
+Añade que en el conversor de HEIC se puedan pasar un paquete de fotos...
+Añade una sección nueva para... hacer paquetes de archivos.</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resultado Prompt 6:</span>
+                    <img src="../FotosDocumentacion/fotos-GestArch/prompt6.png" style="width:430px; height:430px; object-fit:cover;" alt="Captura Prompt 6" class="code-img">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 7: Workspace Unificado</h3>
+                <p class="text-gray-600 mb-4">Detección automática del tipo de archivo en una única vista.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>En la pestaña de visor de archivos y documentos ha de unificarse, haciendo que la aplicación entienda cuando es un archivo visible y un archivo editable de manera automática.</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resultado Prompt 7:</span>
+                    <img src="../FotosDocumentacion/fotos-GestArch/prompt7.png" style="width:430px; height:430px; object-fit:cover;" alt="Captura Prompt 7" class="code-img">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 8: Modo Oscuro y Mejoras JSON</h3>
+                <p class="text-gray-600 mb-4">Implementación de tema día/noche y mejora en el flujo de conversión.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Quiero añadir y arreglar cosas de la aplicación. Primero quiero añadir un modo noche y modo día, con un toggle que sea intuitivo...
+Quiero que en el apartado de "Converters" cambies, mejores y hagas más intuitiva el la interfaz... haciendo que se cree el csv a partir de un archivo json ya existente.</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resultado Prompt 8:</span>
+                    <img src="../FotosDocumentacion/fotos-GestArch/prompt8.png" style="width:430px; height:430px; object-fit:cover;" alt="Captura Prompt 8" class="code-img">
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 9: Autenticación (Login/Registro)</h3>
+                <p class="text-gray-600 mb-4">Sistema de seguridad obligatorio al inicio.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Añade una verificación de sesión para el usuario... si quiere crear un usuario, se añadirá una pestaña abajo para "Crear usuario"...
+Esta pestaña de iniciar sesión ha de ser la primera pagina que salga al iniciar la app.</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resultado Prompt 9:</span>
+                    <img src="../FotosDocumentacion/fotos-GestArch/prompt9.png" style="width:430px; height:430px; object-fit:cover;" alt="Captura Prompt 9" class="code-img">
+                </div>
+            </section>
+
+             <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 10: Adaptación Móvil y Detalles</h3>
+                <p class="text-gray-600 mb-4">Diseño responsivo y mejoras en la experiencia de usuario (UX) en el login.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Quiero que adaptes la interfaz para móviles, que sea capaz de verse de manera correcta...
+Además en la puerta de entrada permite que los usuarios vean dandole click a un botón que contraseña están usando...</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resultado Prompt 10:</span>
+                    <img src="../FotosDocumentacion/fotos-GestArch/prompt10.png" style="width:430px; height:430px; object-fit:cover;" alt="Captura Prompt 10" class="code-img">
+                </div>
+            </section>
+
+        </main>
+
+        <hr class="my-12 border-gray-200">
+<main class="space-y-16">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+                    <span class="bg-blue-600 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 3</span>
+                    Galería de Código y Lógica Interna
+                </h2>
+                <p class="text-gray-600 mb-8">
+                    Análisis profundo de la implementación técnica basado en la documentación "Explicación del Código de aGravity".
+                </p>
+
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.1. Arquitectura y Seguridad</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Entrada de datos a la aplicación (App.jsx)</h4>
+                        <pre><code>// Gestión de navegación por estado (SPA)
+const [activeTab, setActiveTab] = useState('browser')
+
+const renderContent = () => {
+  if (activeTab === 'browser') return &lt;FileBrowser /&gt;
+  if (activeTab === 'tools') return &lt;Converter /&gt;
+  // Renderizado condicional sin recarga
+}</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">Permite la entrada de datos a traves de los archivos del dispositivo y de las base de datos.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Protección de Rutas (Auth.jsx)</h4>
+                        <pre><code>useEffect(() => {
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    setSession(session)
+  })
+}, [])
+
+if (!session) return &lt;Auth /&gt;</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">Bloqueo de seguridad: Si no hay sesión de Supabase activa, renderiza el Login en lugar de la App.</p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.2. Sistema de Archivos Inteligente</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Validación de Entrada (FileUploader)</h4>
+                        <pre><code>const handleFileLoaded = (content, name) => {
+  const ext = name.split('.').pop().toLowerCase()
+  
+  // Lógica de filtrado según la pestaña activa
+  if (activeTab === 'editor' && !['txt','md','json'].includes(ext)) {
+     alert("Formato no soportado en editor")
+  }
+}</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">Detección de extensión al soltar el archivo para dirigirlo al procesador correcto.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Estrategia de Guardado Híbrido</h4>
+                        <pre><code>// 1. Binarios (PDF/Img) -> Storage
+if (isBinary) {
+  await supabase.storage.from('files').upload(path, fileObj)
+}
+
+// 2. Metadatos y Texto -> Base de Datos
+await supabase.from('documents').insert([{
+   name: fileName,
+   storage_path: isBinary ? path : null,
+   content: !isBinary ? finalContent : null
+}])</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">Sistema dual: El texto se guarda en SQL para búsqueda rápida; los binarios en Bucket S3, guardando solo la referencia.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Apertura Inteligente (App.jsx)</h4>
+                        <pre><code>if (fileRec.content !== null) {
+  setFileContent(fileRec.content) // Carga instantánea (Texto)
+} else if (fileRec.storage_path) {
+  // Descarga bajo demanda (Binario)
+  const { data } = await supabase.storage
+      .from('files')
+      .download(fileRec.storage_path)
+}</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">Optimización de carga: Solo descarga los archivos pesados cuando el usuario hace clic en ellos.</p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.3. Motores de Conversión y Edición</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Lector de Excel (xlsx)</h4>
+                        <pre><code>import * as XLSX from 'xlsx'
+
+const workbook = XLSX.read(e.target.result, { type: 'binary' });
+const sheetName = workbook.SheetNames[0];
+// Conversión automática a JSON
+const json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">Uso de SheetJS para parsear hojas de cálculo binarias y convertirlas a estructuras manipulables en web.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Conversor HEIC (heic2any)</h4>
+                        <pre><code>import heic2any from 'heic2any'
+
+const blob = await heic2any({
+  blob: file,
+  toType: 'image/jpeg',
+  quality: 0.8
+})
+const url = URL.createObjectURL(blob)</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">Procesa imágenes de Apple directamente en el navegador, devolviendo un JPEG visible.</p>
+                    </div>
+
+                     <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Empaquetador ZIP (JSZip)</h4>
+                        <pre><code>import JSZip from 'jszip'
+const zip = new JSZip()
+
+zip.file("nota.txt", "contenido texto");
+zip.file("imagen.png", blobData);
+
+const content = await zip.generateAsync({ type: 'blob' })
+saveAs(content, 'backup.zip')</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">Generación de archivos comprimidos en el cliente para exportar lotes de documentos.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Editor Hexadecimal</h4>
+                        <pre><code>const buffer = e.target.result; // ArrayBuffer
+const view = new Uint8Array(buffer);
+// Renderiza cada byte en base 16
+view.forEach(byte => {
+  console.log(byte.toString(16).padStart(2, '0'))
+})</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">Permite la inspección de bajo nivel para archivos corruptos o formatos desconocidos.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-200">
+            <p class="text-sm text-gray-500">&copy; 2025 Arturo Vaquero Serrano. Todos los derechos reservados.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
