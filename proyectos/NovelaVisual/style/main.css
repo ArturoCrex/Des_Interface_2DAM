@@ -1,0 +1,34 @@
+/**
+ * =============================================================================
+ * This is the file where all your styling should go in.
+ * Instead of modifying the styles found in the monogatari.css file or others,
+ * you should overwrite those styles in this file.
+ * =============================================================================
+**/
+
+/* Main Menu Styling - Title Screen Background */
+[data-screen="main"] {
+    background-image: url('../assets/scenes/main_title.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Text Box styling - Improved Readability */
+[data-component="text-box"] {
+    background-color: rgba(0, 0, 0, 0.85);
+    /* Dark semi-transparent background */
+    border-radius: 10px;
+    border: 2px solid #5bcaff;
+    /* Matching default theme blue */
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    color: #f7f6f6;
+    margin-bottom: 20px;
+}
+
+/* Supabase Stat Notification CSS Removed */
