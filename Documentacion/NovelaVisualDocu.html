@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación - Despertar en el Hielo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        pre {
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .cmd-terminal {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            overflow-x: auto; 
+        }
+
+        .cmd-path { color: #4ec9b0; }
+        .cmd-command { color: #dcdcaa; }
+        .cmd-output { color: #cccccc; }
+        .cmd-success { color: #6a9955; }
+        .cmd-highlight { color: #569cd6; font-weight: bold; }
+        
+        code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+
+        /* Clase necesaria para la galería de la Parte 3 */
+        .code-placeholder {
+            background-color: #f3f4f6;
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v38h-2V20.5zM38 0h-2v40h2V0z' fill='%23e5e7eb' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-weight: 500;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-left mb-10 md:mb-12 pb-8 border-b">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Documentación: Despertar en el Hielo</h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-4xl">
+                Registro del desarrollo de una Novela Visual de ciencia ficción utilizando HTML, CSS, JS y el framework Monogatari.
+            </p>
+        </header>
+
+<section class="mb-20">
+    <h2 class="text-4xl font-bold mb-8 flex items-center">
+        <span class="bg-orange-600 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 1</span>
+        Configuración y Assets Generados
+    </h2>
+
+    <div class="space-y-12">
+
+        <div>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.1 Estructura del Proyecto (Monogatari)</h3>
+            <p class="text-gray-600 mb-5">
+                Configuración inicial del sistema de archivos para el motor de la novela visual. Usamos Monogatari, un framework de Java Script que funciona como motor para hacer juegos en web, especializado en novelas visuales. Decidi usar esto como motor para facilitar configuraciones de fondos, mecanicas de juego y hacer que funcione màs fluido el juego.
+            </p>
+            <div class="cmd-terminal">
+                <div><span class="cmd-path">~/project></span> <span class="cmd-command">mkdir assets/images/scenes</span></div>
+                <div><span class="cmd-path">~/project></span> <span class="cmd-command">mkdir assets/images/items</span></div>
+                <div><span class="cmd-path">~/project></span> <span class="cmd-command">mkdir js/minigames</span></div>
+                <div><span class="cmd-path">~/project></span> <span class="cmd-command">touch js/storage.js</span></div>
+            </div>
+        </div>
+
+        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                1.2 Assets Generados
+            </h3>
+            <p class="text-gray-700 mb-6">
+                A continuación se detallan los recursos gráficos creados e implementados.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-4 rounded shadow-sm border">
+                    <h4 class="font-bold text-indigo-900 border-b pb-2 mb-3">Personajes (Sprites)</h4>
+                    <ul class="text-sm space-y-2 text-gray-600 font-mono">
+                        <li class="flex items-center">aura_neutral.png</li>
+                        <li class="flex items-center">aura_corrupt.png</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-4 rounded shadow-sm border">
+                    <h4 class="font-bold text-indigo-900 border-b pb-2 mb-3">Escenarios (Fondos)</h4>
+                    <ul class="text-sm space-y-2 text-gray-600 font-mono">
+                        <li>bg_enfermeria.jpg</li>
+                        <li>bg_pasillo.jpg</li>
+                        <li>bg_dormitorio.jpg</li>
+                        <li>bg_laboratorio.jpg</li>
+                        <li>bg_ingenieria_off.jpg</li>
+                        <li>bg_ingenieria_on.jpg</li>
+                        <li>bg_puente.jpg</li>
+                        <li>bg_espacio_eva.jpg</li>
+                        <li>bg_capsula.jpg</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-4 rounded shadow-sm border">
+                    <h4 class="font-bold text-indigo-900 border-b pb-2 mb-3">Inventario (Ítems)</h4>
+                    <ul class="text-sm space-y-2 text-gray-600 font-mono">
+                        <li class="flex items-center">
+                            <span class="mr-2"></span> item_bisturi.png
+                        </li>
+                        <li class="flex items-center">
+                            <span class="mr-2"></span> item_tarjeta.png
+                        </li>
+                        <li class="flex items-center">
+                            <span class="mr-2"></span> item_celula.png
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+        <hr class="my-12 border-gray-200">
+
+        <main class="space-y-16">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+                    <span class="bg-red-600 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 2</span>
+                    Historial de Prompts (Desarrollo)
+                </h2>
+                <p class="text-gray-600">Evolución paso a paso del proyecto, desde la estructura base hasta la integración de minijuegos y backend.</p>
+            </div>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Fase 1: Petición Inicial y Estructura</h3>
+                <p class="text-gray-600 mb-4">Configuración del entorno Monogatari y definición de variables de inventario.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>"Vamos a crear una juego novela visual... quiero mantenerlo sencillo usando html, css y java script, usando el framework de monogatari.
+tiene que existir un archivo storage.js... inventory: { bisturi: false, tarjeta: false, celula: false, reactor_fix: false }..."</code></pre>
+                </div>
+                <div class="mt-4 text-sm text-gray-500">
+                    <strong>Acciones realizadas:</strong> Descarga del framework, limpieza de archivos core, creación de carpetas de assets y configuración de <code>storage.js</code>.
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Fase 2: Implementación de la Historia</h3>
+                <p class="text-gray-600 mb-4">Integración del guion completo .</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Ahora añadiras el script de la historia que te coy a dar (Guion completo de la historia que quieras), ademas asegurate de crear las variables necesarias para los siguietes objetos, fondos y personajes(Insertar lista de objetos con descripcion de que es cada uno).</code></pre>
+                </div>
+                <div class="mt-4 text-sm text-gray-500">
+                    <strong>Acciones realizadas:</strong> Programación de escenas (Enfermería, Pasillo, Lab, Ingeniería, Puente), lógica de recolección de ítems y programación de los 3 finales distintos + muerte.
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Fase 3: Refinamiento de UI y Assets</h3>
+                <p class="text-gray-600 mb-4">Mejora de la legibilidad y limpieza de assets no utilizados.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Debido a un cambio de planes elimina el marco de la UI originalmente dado como foto. Ademas actualiza el css para darle un estilo cercano a como se veria un testo en otro juegos, sin que moleste en ver las imagenes de fondo</code></pre>
+                </div>
+                <div class="mt-4 text-sm text-gray-500">
+                    <strong>Acciones realizadas:</strong> Eliminación de <code>ui_terminal</code>, actualización de <code>main.css</code> para fondos semitransparentes en cajas de texto y validación de directorios.
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Fase 4: Refactorizacion del juego y solucionar bugs</h3>
+                <p class="text-gray-600 mb-4">Creación de una logica lineal para que le juego funcione.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Crea la logica para que el juego sea lineal, añadiendo modificaciones necesarias a la historia para que sea visible, entendible y lo mas importante de todo, que sea rapida y funcional.</code></pre>
+                </div>
+                <div class="mt-4 text-sm text-gray-500">
+                    <strong>Acciones realizadas:</strong> 
+                    <ul class="list-disc list-inside mt-2 ml-2">
+                        <li>Creación de interacciones entre partes del juego.</li>
+                        <li>Creación de elecciones para incluir al usuario.</li>
+                        <li>Integración de Promesas (opciones y validaciones) para manejar estados de Victoria/Derrota.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Fase 5: Integración con Supabase <strong>(Deprecated)</strong></h3>
+                <p class="text-gray-600 mb-4">Seguir la elecciones de jugadores y mostrarlas a tiempo real a traves de supabase</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Añade lo necesario al codigo para que la base de datos que te doy pueda seguir las estadisticas de eleccion del usuario, ademas muestralas con un recuadro el porcentaje de elección</code></pre>
+                </div>
+                <div class="mt-4 text-sm text-gray-500">
+                    <strong>Acciones realizadas: Decidi eliminar esta parte, debido a que causaba errores de desincronización si se ejecutaba en dos sitios al mismo tiempo y podia dar lag y tardar en cargas bastante para un proyecto tan pequeño.
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Fase 6: Pulido Final</h3>
+                <p class="text-gray-600 mb-4">Actualizar pantalla de título y actualización de documentación.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>Crea una pagina principal actualizada con las opciones base de Monogatari y usa de fondo la iamgen que he añadido como nueva.</code></pre>
+                </div>
+                <div class="mt-4 text-sm text-gray-500">
+                    <strong>Acciones realizadas:</strong> Estilizado del Menú Principal de Monogatari</code>.
+                </div>
+            </section>
+
+        </main>
+
+        <hr class="my-12 border-gray-200">
+        
+        <section class="mb-16">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+                    <span class="bg-blue-600 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 3</span>
+                    Código y Lógica Interna
+                </h2>
+                <p class="text-gray-600">
+                    Desglose visual de los componentes técnicos clave del proyecto.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+                    <div class="h-48 code-placeholder">
+                        <img class="w-full h-full object-contain" src="../FotosDocumentacion/fotos-novela/code/presets_mono.png" alt="presets de Monogatari">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-800 mb-2">Configuración por defecto de Monogatari</h4>
+                        <p class="text-sm text-gray-600 min-h-[3rem]">
+                            Esta foto enseña los archivos base que te da monogatari al crear un proyecto con su motor.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+                    <div class="h-48 code-placeholder">
+                        <img class="w-full h-full object-contain" src="../FotosDocumentacion/fotos-novela/code/InicioMonogatari.png" alt="Inicio de Monogatari">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-800 mb-2">Declarar monogatari en el codigo</h4>
+                        <p class="text-sm text-gray-600 min-h-[3rem]">
+                            Es necesario que el codigo entienda que esta ejecutando el motor de monogatari para procesar el codigo del juego.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+                    <div class="h-48 code-placeholder">
+                        <img class="w-full h-full object-contain" src="../FotosDocumentacion/fotos-novela/code/Declarar_assets.png" alt="declarar assets de Monogatari">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-800 mb-2">Declarando los assets para monogatari</h4>
+                        <p class="text-sm text-gray-600 min-h-[3rem]">
+                            Monogatari se le tiene que dar una lista de assets que entienda que y porque se hacen cosas. Asi declaramos objetos, fondos y personajes.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+                    <div class="h-48 code-placeholder">
+                        <img class="w-full h-full object-contain" src="../FotosDocumentacion/fotos-novela/code/Crear_personaje.png" alt="crear personajes en Monogatari">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-800 mb-2">Crear personajes en monogatari</h4>
+                        <p class="text-sm text-gray-600 min-h-[3rem]">
+                            En el siguiente codigo podemos ver como se crean personajes en monogatari, dandole sprites, id unico y permitiendonos usarlo de manera facil e intuitiva.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+                    <div class="h-48 code-placeholder">
+                        <img class="w-full h-full object-contain" src="../FotosDocumentacion/fotos-novela/code/condicionalAct.png" alt="condiciones de Monogatari">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-800 mb-2">Condiciones para elegir</h4>
+                        <p class="text-sm text-gray-600 min-h-[3rem]">
+                        Monogatari permite ejecutar partes del juego y decisiones de manera facil con condicionales, permitiendo elegir la historia                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+                    <div class="h-48 code-placeholder">
+                        <img class="w-full h-full object-contain" src="../FotosDocumentacion/fotos-novela/code/monogatari_script.png" alt="presets de Monogatari">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-800 mb-2">Script de la historia</h4>
+                        <p class="text-sm text-gray-600 min-h-[3rem]">
+                            Monogatari permite iniciar el script y ejecutar la historia llamando a shortcuts cuando sea necesario, para ejecutar funciones y acciones por el usuario.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+                    <div class="h-48 code-placeholder">
+                        <img class="w-full h-full object-contain" src="../FotosDocumentacion/fotos-novela/code/Mono_usar_inventario.png" alt="presets de Monogatari">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-800 mb-2">Crear inventario</h4>
+                        <p class="text-sm text-gray-600 min-h-[3rem]">
+                            Si tienes items puedes crear un inventario, que permite saber si el usuario tiene o no objetos y luego acceder a esa variable para determinar por que caminos va el juego.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+                    <div class="h-48 code-placeholder">
+                        <img class="w-full h-full object-contain" src="../FotosDocumentacion/fotos-novela/code/mono_shortcut.png" alt="presets de Monogatari">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-800 mb-2">Ejemplos de shortcuts/h4>
+                        <p class="text-sm text-gray-600 min-h-[3rem]">
+                            Aqui podemos ver los ejemplos de shortcuts que se menciona anteriormente y como monogatari sabe cuando, como y a que saltar, determinando acciones y eventos a ocurrir.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+                    <div class="h-48 code-placeholder">
+                        <img class="w-full h-full object-contain" src="../FotosDocumentacion/fotos-novela/code/MenuConfig_optionjs.png" alt="presets de Monogatari">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-800 mb-2">Opciones</h4>
+                        <p class="text-sm text-gray-600 min-h-[3rem]">
+                            En monogatari es importante declarar donde se encuentra cada parte del contenido, fotos, personajes, audios. Si se declara mal el juego no funcionara correctamente.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-200">
+            <p class="text-sm text-gray-500">&copy; 2026 Arturo Vaquero Serrano. Todos los derechos reservados.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
