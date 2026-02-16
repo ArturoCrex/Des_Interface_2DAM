@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación del Proyecto - App Gestión Finanzas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        pre {
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .cmd-terminal {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            overflow-x: auto;
+        }
+
+        .cmd-path {
+            color: #4ec9b0;
+        }
+
+        .cmd-command {
+            color: #dcdcaa;
+        }
+
+        .cmd-output {
+            color: #cccccc;
+        }
+
+        .cmd-success {
+            color: #6a9955;
+        }
+
+        .cmd-highlight {
+            color: #569cd6;
+            font-weight: bold;
+        }
+
+        code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .code-img {
+            width: 100%;
+            height: auto;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+            display: block;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body class="bg-white text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <header class="text-left mb-10 md:mb-12 pb-8 border-b">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Documentación: App Gestión Finanzas
+            </h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-4xl">
+                Registro del desarrollo de una aplicación PWA offline-first para gestión de finanzas personales con
+                integración de múltiples APIs de mercado y sincronización en la nube.
+            </p>
+        </header>
+
+        <section class="mb-20">
+            <h2 class="text-4xl font-bold mb-8 flex items-center">
+                <span class="bg-orange-600 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 1</span>
+                Configuración del Entorno y Stack Tecnológico
+            </h2>
+
+            <div class="space-y-12">
+
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.1 Estructura del Proyecto</h3>
+                    <p class="text-gray-600 mb-5">
+                        La aplicación es una PWA (Progressive Web App) construida con Vite + React 19 + TypeScript,
+                        diseñada para funcionar tanto online como offline.
+                    </p>
+                    <div class="cmd-terminal">
+                        <div><span class="cmd-path">~></span> <span class="cmd-command">npm create vite@latest
+                                AppGestionFinanzas -- --template react-ts</span></div>
+                        <div><span class="cmd-path">~></span> <span class="cmd-command">cd AppGestionFinanzas</span>
+                        </div>
+                        <div><span class="cmd-path">~/AppGestionFinanzas></span> <span class="cmd-command">npm
+                                install</span></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.2 Instalación de Dependencias Principales
+                    </h3>
+                    <p class="text-gray-600 mb-5">
+                        Stack completo con gestión de estado, base de datos offline, internacionalización y
+                        visualización de datos.
+                    </p>
+                    <div class="cmd-terminal">
+                        <div><span class="cmd-output"># Estado global y routing</span></div>
+                        <div><span class="cmd-path">~/AppGestionFinanzas></span> <span class="cmd-command">npm install
+                                zustand react-router-dom</span></div>
+                        <br>
+                        <div><span class="cmd-output"># Base de datos offline (IndexedDB)</span></div>
+                        <div><span class="cmd-path">~/AppGestionFinanzas></span> <span class="cmd-command">npm install
+                                dexie</span></div>
+                        <br>
+                        <div><span class="cmd-output"># Backend y autenticación</span></div>
+                        <div><span class="cmd-path">~/AppGestionFinanzas></span> <span class="cmd-command">npm install
+                                @supabase/supabase-js</span></div>
+                        <br>
+                        <div><span class="cmd-output"># Internacionalización (i18n)</span></div>
+                        <div><span class="cmd-path">~/AppGestionFinanzas></span> <span class="cmd-command">npm install
+                                i18next react-i18next i18next-browser-languagedetector i18next-http-backend</span></div>
+                        <br>
+                        <div><span class="cmd-output"># Gráficas y visualización</span></div>
+                        <div><span class="cmd-path">~/AppGestionFinanzas></span> <span class="cmd-command">npm install
+                                recharts</span></div>
+                        <br>
+                        <div><span class="cmd-output"># PWA y Service Worker</span></div>
+                        <div><span class="cmd-path">~/AppGestionFinanzas></span> <span class="cmd-command">npm install
+                                -D vite-plugin-pwa</span></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.3 Resumen de APIs Utilizadas</h3>
+                    <p class="text-gray-600 mb-5">
+                        La aplicación integra múltiples APIs para proporcionar datos de mercado en tiempo real y
+                        funcionalidad cloud.
+                    </p>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">¿Por qué estas APIs?</h4>
+
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="font-semibold text-gray-700 mb-2">🔐 Supabase (Auth + Database + Storage)
+                                </h5>
+                                <p class="text-gray-600 text-sm">
+                                    <strong>Razón:</strong> Proporciona autenticación completa, base de datos PostgreSQL
+                                    en la nube y almacenamiento de archivos en un solo servicio.
+                                    Permite sincronización multi-dispositivo y backup automático. Su capa gratuita (50K
+                                    usuarios activos mensuales) es generosa para proyectos personales.
+                                </p>
+                                <p class="text-gray-500 text-xs mt-2">
+                                    <strong>Variables:</strong> <code>VITE_SUPABASE_URL</code>,
+                                    <code>VITE_SUPABASE_ANON_KEY</code>
+                                </p>
+                            </div>
+
+                            <div>
+                                <h5 class="font-semibold text-gray-700 mb-2">💱 Open Exchange Rates (Divisas)</h5>
+                                <p class="text-gray-600 text-sm">
+                                    <strong>Razón:</strong> API gratuita sin necesidad de registro que proporciona tasas
+                                    de cambio actualizadas diariamente para más de 200 monedas.
+                                    Sin límites de peticiones, ideal para consultas frecuentes sin costes.
+                                </p>
+                                <p class="text-gray-500 text-xs mt-2">
+                                    <strong>Endpoint:</strong> <code>https://open.er-api.com/v6/latest/{BASE}</code> |
+                                    <strong>API Key:</strong> No requerida
+                                </p>
+                            </div>
+
+                            <div>
+                                <h5 class="font-semibold text-gray-700 mb-2">₿ CoinGecko (Criptomonedas)</h5>
+                                <p class="text-gray-600 text-sm">
+                                    <strong>Razón:</strong> La API más completa y confiable para datos de criptomonedas.
+                                    Proporciona precios en tiempo real, capitalización de mercado,
+                                    cambios porcentuales y metadatos (logos, nombres) sin necesidad de API key. Límite
+                                    de ~30 peticiones/minuto es suficiente para uso personal.
+                                </p>
+                                <p class="text-gray-500 text-xs mt-2">
+                                    <strong>Endpoint:</strong>
+                                    <code>https://api.coingecko.com/api/v3/coins/markets</code> | <strong>API
+                                        Key:</strong> Opcional
+                                </p>
+                            </div>
+
+                            <div>
+                                <h5 class="font-semibold text-gray-700 mb-2">🥇 Metales Preciosos (Cálculo Híbrido)</h5>
+                                <p class="text-gray-600 text-sm">
+                                    <strong>Razón:</strong> Implementación híbrida que usa precios base en USD
+                                    (actualizados manualmente) y los convierte a otras monedas usando Open Exchange
+                                    Rates.
+                                    Evita depender de APIs de metales que suelen tener límites muy restrictivos en sus
+                                    planes gratuitos.
+                                </p>
+                                <p class="text-gray-500 text-xs mt-2">
+                                    <strong>Nota:</strong> Para precios en tiempo real, se recomienda integrar
+                                    <code>metals.dev</code> o <code>goldapi.io</code>
+                                </p>
+                            </div>
+
+                            <div>
+                                <h5 class="font-semibold text-gray-700 mb-2">📈 Alpha Vantage (Acciones)</h5>
+                                <p class="text-gray-600 text-sm">
+                                    <strong>Razón:</strong> API gratuita con registro que proporciona cotizaciones de
+                                    acciones en tiempo real, búsqueda de símbolos y datos históricos.
+                                    Límite de 5 peticiones/minuto y 500/día es adecuado para consultas puntuales.
+                                    Alternativa gratuita a APIs premium como Bloomberg o Reuters.
+                                </p>
+                                <p class="text-gray-500 text-xs mt-2">
+                                    <strong>Variable:</strong> <code>VITE_ALPHA_VANTAGE_KEY</code> |
+                                    <strong>Registro:</strong> <a href="https://www.alphavantage.co/support/#api-key"
+                                        class="text-blue-600 underline">alphavantage.co</a>
+                                </p>
+                            </div>
+
+                            <div>
+                                <h5 class="font-semibold text-gray-700 mb-2">💾 Dexie.js (IndexedDB Local)</h5>
+                                <p class="text-gray-600 text-sm">
+                                    <strong>Razón:</strong> No es una API externa, pero es crucial para el modo
+                                    offline-first. Dexie simplifica el uso de IndexedDB (base de datos del navegador)
+                                    permitiendo almacenar transacciones, metas de ahorro y suscripciones localmente. La
+                                    app funciona completamente sin conexión gracias a esta capa.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.4 Configuración de Variables de Entorno</h3>
+                    <p class="text-gray-600 mb-5">
+                        Crea un archivo <code>.env</code> en la raíz del proyecto con las siguientes variables:
+                    </p>
+                    <pre class="bg-gray-900 text-gray-100 p-5 rounded-lg overflow-x-auto text-sm">
+# Supabase (obligatorio para auth y cloud sync)
+VITE_SUPABASE_URL=https://xxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGci...
+
+# Alpha Vantage (opcional, para cotización de acciones)
+VITE_ALPHA_VANTAGE_KEY=tu_api_key_aqui
+            </pre>
+                    <p class="text-sm text-amber-700 mt-4">
+                        ⚠️ Sin estas variables, la app funciona en <strong>modo offline</strong> usando únicamente
+                        IndexedDB.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.5 Ejecutar la Aplicación</h3>
+                    <div class="cmd-terminal">
+                        <div><span class="cmd-path">~/AppGestionFinanzas></span> <span class="cmd-command">npm run
+                                dev</span></div>
+                        <div class="cmd-output"> VITE v7.3.1 ready in 423 ms</div>
+                        <div class="cmd-success"> ➜ Local: http://localhost:5173/</div>
+                    </div>
+                    <p class="text-gray-600 mt-4">
+                        Abre el enlace para ver el Dashboard con gráficas de transacciones, mercados y gestión de
+                        finanzas.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <hr class="my-12 border-gray-200">
+
+        <main class="space-y-16">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+                    <span class="bg-red-600 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 2</span>
+                    Historial de Prompts y Evolución del Proyecto
+                </h2>
+                <p class="text-gray-600">Evolución paso a paso del proyecto, desde la concepción inicial hasta la
+                    implementación de características avanzadas.</p>
+            </div>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 1: Definición de la Arquitectura Base</h3>
+                <p class="text-gray-600 mb-4">Establecimiento de la estructura fundamental de la aplicación con enfoque
+                    offline-first y PWA.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>"Necesito crear una aplicación de gestión de finanzas personales que funcione como PWA. Debe tener capacidad offline usando IndexedDB, sincronización con Supabase cuando haya conexión, y soporte para múltiples idiomas (español e inglés). La estructura debe ser modular con React + TypeScript + Vite."</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span
+                        class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2 block">Objetivo:</span>
+                    <p class="text-gray-700 mb-4">
+                        Crear una base sólida que permita trabajar offline-first, garantizando que la aplicación
+                        funcione sin conexión a internet
+                        y sincronice datos cuando esté disponible. Implementar internacionalización desde el inicio para
+                        facilitar expansión futura.
+                    </p>
+                    <span
+                        class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 block">Resultado:</span>
+                    <p class="text-gray-700">
+                        Se estableció la arquitectura con Dexie.js para IndexedDB, Zustand para gestión de estado
+                        global, React Router v7 para navegación,
+                        y i18next para internacionalización. Se configuró vite-plugin-pwa para generar Service Workers
+                        automáticamente.
+                    </p>
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 2: Sistema de Autenticación Híbrido</h3>
+                <p class="text-gray-600 mb-4">Implementación de autenticación que funcione tanto en modo cloud como
+                    offline.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>"Implementa un sistema de autenticación que use Supabase Auth cuando esté disponible, pero que permita usar la app en modo offline sin login. Debe detectar automáticamente si Supabase está configurado y adaptar el flujo de autenticación."</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span
+                        class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2 block">Objetivo:</span>
+                    <p class="text-gray-700 mb-4">
+                        Permitir que usuarios sin configuración de Supabase puedan usar la app inmediatamente en modo
+                        offline,
+                        mientras que usuarios con credenciales cloud obtengan sincronización multi-dispositivo y backup
+                        automático.
+                    </p>
+                    <span
+                        class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 block">Resultado:</span>
+                    <p class="text-gray-700">
+                        Se creó <code>useAuthStore</code> con detección automática de Supabase mediante
+                        <code>isSupabaseEnabled()</code>.
+                        El componente <code>AuthGuard</code> permite acceso directo en modo offline o redirige a login
+                        si Supabase está configurado.
+                        Los servicios de datos (<code>dataService.ts</code>) priorizan Supabase pero funcionan con Dexie
+                        como fallback.
+                    </p>
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 3: Integración de APIs de Mercado</h3>
+                <p class="text-gray-600 mb-4">Añadir visualización de datos de mercado financiero en tiempo real.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>"Crea una sección de Mercados que muestre cotizaciones de divisas (forex), criptomonedas, metales preciosos y acciones. Usa APIs gratuitas sin necesidad de registro cuando sea posible. Implementa caché para evitar exceder límites de peticiones."</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span
+                        class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2 block">Objetivo:</span>
+                    <p class="text-gray-700 mb-4">
+                        Proporcionar información de mercado relevante para usuarios que gestionan inversiones o monedas
+                        extranjeras,
+                        sin depender de APIs de pago y respetando límites de rate limiting.
+                    </p>
+                    <span
+                        class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 block">Resultado:</span>
+                    <p class="text-gray-700">
+                        Se implementó <code>marketService.ts</code> con cuatro fuentes de datos: Open Exchange Rates
+                        (forex), CoinGecko (crypto),
+                        cálculo híbrido para metales preciosos, y Alpha Vantage (acciones). Se añadió caché en
+                        localStorage para reducir peticiones
+                        y mejorar rendimiento. La página Markets muestra tabs con visualización de datos usando
+                        Recharts.
+                    </p>
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 4: Sistema de Adjuntos y Almacenamiento
+                </h3>
+                <p class="text-gray-600 mb-4">Permitir adjuntar recibos, facturas y documentos a las transacciones.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>"Implementa la capacidad de adjuntar archivos (imágenes, PDFs, audio) a las transacciones. En modo offline, guarda los archivos como base64 en IndexedDB. En modo cloud, súbelos a Supabase Storage y guarda solo la referencia."</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span
+                        class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2 block">Objetivo:</span>
+                    <p class="text-gray-700 mb-4">
+                        Permitir documentación completa de gastos e ingresos mediante adjuntos, manteniendo la
+                        funcionalidad offline-first
+                        y optimizando el almacenamiento en cloud.
+                    </p>
+                    <span
+                        class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 block">Resultado:</span>
+                    <p class="text-gray-700">
+                        Se creó <code>fileService.ts</code> que maneja archivos de forma híbrida: en modo offline
+                        convierte archivos a base64
+                        y los almacena en la tabla <code>attachments</code> de Dexie; en modo cloud sube a Supabase
+                        Storage y guarda solo la URL.
+                        Se implementó previsualización de imágenes y descarga de PDFs directamente desde la interfaz de
+                        transacciones.
+                    </p>
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 5: Metas de Ahorro y Contribuciones</h3>
+                <p class="text-gray-600 mb-4">Sistema de seguimiento de objetivos de ahorro con visualización de
+                    progreso.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>"Añade una sección de Ahorros donde los usuarios puedan crear metas (ej: 'Vacaciones - €2000'), registrar contribuciones periódicas, y ver el progreso con barras visuales y porcentajes. Debe calcular cuánto falta y la fecha estimada de cumplimiento."</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span
+                        class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2 block">Objetivo:</span>
+                    <p class="text-gray-700 mb-4">
+                        Motivar el ahorro mediante visualización clara del progreso hacia objetivos específicos,
+                        con cálculos automáticos de proyecciones basadas en contribuciones históricas.
+                    </p>
+                    <span
+                        class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 block">Resultado:</span>
+                    <p class="text-gray-700">
+                        Se implementaron las tablas <code>saving_goals</code> y <code>saving_contributions</code> tanto
+                        en Dexie como en Supabase.
+                        La página Savings muestra tarjetas con barras de progreso, porcentaje completado, y estimación
+                        de fecha de cumplimiento
+                        basada en la media de contribuciones mensuales. Se añadió modal para registrar nuevas
+                        contribuciones con validación de montos.
+                    </p>
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 6: División de Gastos (Split Bills)</h3>
+                <p class="text-gray-600 mb-4">Funcionalidad para dividir gastos entre múltiples personas con cálculo
+                    automático de deudas.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>"Implementa una calculadora de división de gastos donde pueda añadir participantes, asignar quién pagó qué, y calcular automáticamente quién debe dinero a quién. Debe optimizar las transacciones para minimizar el número de pagos necesarios."</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span
+                        class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2 block">Objetivo:</span>
+                    <p class="text-gray-700 mb-4">
+                        Facilitar la gestión de gastos compartidos (cenas, viajes, alquileres) con cálculo automático de
+                        deudas
+                        y optimización de transacciones para simplificar liquidaciones.
+                    </p>
+                    <span
+                        class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 block">Resultado:</span>
+                    <p class="text-gray-700">
+                        Se creó la página SplitBill con algoritmo de optimización de deudas que reduce el número de
+                        transacciones necesarias.
+                        Permite añadir participantes dinámicamente, registrar gastos individuales, y genera un resumen
+                        visual de quién debe a quién.
+                        Los registros se guardan en <code>split_bills</code> con historial completo de liquidaciones.
+                    </p>
+                </div>
+            </section>
+
+            <section class="p-6 border border-gray-200 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-2">Prompt 7: Despliegue en GitHub Pages</h3>
+                <p class="text-gray-600 mb-4">Configuración para deployment estático en GitHub Pages con manejo correcto
+                    de rutas.</p>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+                    <pre><code>"Configura el proyecto para desplegarse en GitHub Pages. Asegúrate de que las rutas funcionen correctamente con HashRouter, que los assets se carguen desde la ruta base correcta, y que las variables de entorno se manejen adecuadamente en el build."</code></pre>
+                </div>
+                <div class="mt-6">
+                    <span
+                        class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2 block">Objetivo:</span>
+                    <p class="text-gray-700 mb-4">
+                        Hacer la aplicación accesible públicamente sin necesidad de servidor backend,
+                        aprovechando GitHub Pages como hosting gratuito para sitios estáticos.
+                    </p>
+                    <span
+                        class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 block">Resultado:</span>
+                    <p class="text-gray-700">
+                        Se configuró <code>vite.config.ts</code> con <code>base: '/AppGestionFinanzas/'</code> para
+                        rutas correctas.
+                        Se cambió de BrowserRouter a HashRouter para evitar problemas con rutas en GitHub Pages.
+                        Se creó workflow de GitHub Actions (<code>.github/workflows/deploy.yml</code>) para build y
+                        deploy automático en cada push a main.
+                        La app está disponible en <code>https://arturocrex.github.io/AppGestionFinanzas/</code>.
+                    </p>
+                </div>
+            </section>
+
+        </main>
+
+        <hr class="my-12 border-gray-200">
+
+        <main class="space-y-16">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+                    <span class="bg-blue-600 text-white text-sm px-3 py-1 rounded-full mr-3">Parte 3</span>
+                    Galería de Código y Arquitectura Técnica
+                </h2>
+                <p class="text-gray-600 mb-8">
+                    Análisis profundo de los componentes clave que hacen funcionar la aplicación.
+                </p>
+
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.1. Arquitectura de Routing y Lazy
+                    Loading</h3>
+                <div class="grid grid-cols-1 gap-6 mb-10">
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">App.tsx - Configuración de Rutas con Code Splitting
+                        </h4>
+                        <pre><code>// Lazy-loaded pages para optimizar bundle size
+const Dashboard = lazy(() => import('@/pages/Dashboard/Dashboard'));
+const Transactions = lazy(() => import('@/pages/Transactions/Transactions'));
+const Savings = lazy(() => import('@/pages/Savings/Savings'));
+const Markets = lazy(() => import('@/pages/Markets/Markets'));
+
+const router = createHashRouter([
+  // Public routes
+  { path: '/login', element: &lt;Login /&gt; },
+  { path: '/register', element: &lt;Register /&gt; },
+
+  // Protected routes
+  {
+    path: '/',
+    element: (
+      &lt;AuthGuard&gt;
+        &lt;AppShell /&gt;
+      &lt;/AuthGuard&gt;
+    ),
+    children: [
+      { index: true, element: &lt;Dashboard /&gt; },
+      { path: 'transactions', element: &lt;Transactions /&gt; },
+      { path: 'savings', element: &lt;Savings /&gt; },
+      { path: 'markets', element: &lt;Markets /&gt; },
+    ],
+  },
+]);</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">
+                            <strong>Decisión clave:</strong> HashRouter en lugar de BrowserRouter para compatibilidad
+                            con GitHub Pages.
+                            Lazy loading reduce el bundle inicial de ~800KB a ~200KB, cargando páginas bajo demanda.
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.2. Base de Datos Offline (Dexie +
+                    IndexedDB)</h3>
+                <div class="grid grid-cols-1 gap-6 mb-10">
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">db.ts - Esquema de Base de Datos Local</h4>
+                        <pre><code>import Dexie, { type Table } from 'dexie';
+
+class FinanceDB extends Dexie {
+    transactions!: Table&lt;Transaction&gt;;
+    attachments!: Table&lt;Attachment&gt;;
+    savingGoals!: Table&lt;SavingGoal&gt;;
+    savingContributions!: Table&lt;SavingContribution&gt;;
+    subscriptions!: Table&lt;Subscription&gt;;
+    splitBills!: Table&lt;SplitBillRecord&gt;;
+
+    constructor() {
+        super('FinanzasApp');
+
+        // Versión 3 con índices optimizados
+        this.version(3).stores({
+            transactions: '++id, type, category, date, createdAt',
+            attachments: '++id, transactionId, mimeType',
+            savingGoals: '++id, name, deadline',
+            savingContributions: '++id, goalId, date',
+            subscriptions: '++id, name, nextPayment, active',
+            splitBills: '++id, title, createdAt',
+        });
+    }
+}
+
+export const db = new FinanceDB();</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">
+                            <strong>Ventaja:</strong> IndexedDB permite almacenar datos estructurados sin límite de
+                            tamaño (a diferencia de localStorage que tiene ~5MB).
+                            Dexie simplifica las queries con sintaxis tipo SQL:
+                            <code>db.transactions.where('type').equals('expense').toArray()</code>
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.3. Gestión de Estado Global (Zustand)
+                </h3>
+                <div class="grid grid-cols-1 gap-6 mb-10">
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">useAuthStore.ts - Estado de Autenticación</h4>
+                        <pre><code>import { create } from 'zustand';
+
+interface AuthState {
+    user: User | null;
+    session: Session | null;
+    isAuthenticated: boolean;
+    isOfflineMode: boolean;
+    
+    initialize: () => Promise&lt;void&gt;;
+    logout: () => Promise&lt;void&gt;;
+}
+
+export const useAuthStore = create&lt;AuthState&gt;()((set) => ({
+    user: null,
+    session: null,
+    isAuthenticated: false,
+    isOfflineMode: !isSupabaseEnabled(),
+
+    initialize: async () => {
+        // Si Supabase no está configurado, modo offline automático
+        if (!isSupabaseEnabled()) {
+            set({ isOfflineMode: true, isAuthenticated: true });
+            return;
+        }
+
+        // Si está configurado, verificar sesión
+        const { session } = await getSession();
+        set({
+            user: session?.user || null,
+            session,
+            isAuthenticated: !!session,
+        });
+
+        // Escuchar cambios de autenticación
+        onAuthStateChange((user, session) => {
+            set({ user, session, isAuthenticated: !!session });
+        });
+    },
+});</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">
+                            <strong>Patrón offline-first:</strong> La app asume modo offline por defecto y habilita
+                            cloud solo si detecta credenciales de Supabase.
+                            Esto garantiza que funcione inmediatamente sin configuración.
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.4. Servicio de Mercados (APIs
+                    Externas)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Forex - Open Exchange Rates</h4>
+                        <pre><code>const FOREX_BASE_URL = 'https://open.er-api.com/v6/latest';
+
+export async function getForexRates(base = 'EUR') {
+    const res = await fetch(`${FOREX_BASE_URL}/${base}`);
+    const data = await res.json();
+    
+    return {
+        base: data.base_code,
+        rates: data.rates,
+        updatedAt: new Date(data.time_last_update_utc),
+    };
+}</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">
+                            Devuelve tasas de cambio de la moneda base a ~200 monedas. Sin API key, sin límites.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Crypto - CoinGecko</h4>
+                        <pre><code>export async function getCryptoPrices(
+    coins = ['bitcoin', 'ethereum', 'solana'],
+    currency = 'eur'
+) {
+    const ids = coins.join(',');
+    const res = await fetch(
+        `${COINGECKO_URL}/coins/markets?vs_currency=${currency}&ids=${ids}`
+    );
+    const data = await res.json();
+
+    return data.map((coin) => ({
+        id: coin.id,
+        symbol: coin.symbol.toUpperCase(),
+        price: coin.current_price,
+        change24h: coin.price_change_percentage_24h,
+        marketCap: coin.market_cap,
+        image: coin.image,
+    }));
+}</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">
+                            Proporciona precio, cambio 24h, capitalización de mercado y logo. Límite: ~30 req/min sin
+                            key.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Metales - Cálculo Híbrido</h4>
+                        <pre><code>export async function getMetalPrices(currency = 'EUR') {
+    // Obtener tasa de conversión USD -> currency
+    const rates = await getForexRates('USD');
+    const conversionRate = rates.rates[currency] || 1;
+
+    // Precios base en USD/oz (actualizados manualmente)
+    const goldUSD = 5057;
+    const silverUSD = 78;
+    const platinumUSD = 2077;
+
+    return [
+        {
+            name: 'Oro',
+            symbol: 'XAU',
+            pricePerOz: goldUSD * conversionRate,
+            currency,
+        },
+        // ... plata, platino
+    ];
+}</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">
+                            Usa precios base USD + conversión forex. Para tiempo real, integrar <code>metals.dev</code>.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">Acciones - Alpha Vantage</h4>
+                        <pre><code>const ALPHA_VANTAGE_KEY = import.meta.env.VITE_ALPHA_VANTAGE_KEY || 'demo';
+
+export async function getStockQuote(symbol: string) {
+    const res = await fetch(
+        `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${ALPHA_VANTAGE_KEY}`
+    );
+    const data = await res.json();
+    const quote = data['Global Quote'];
+
+    return {
+        symbol: quote['01. symbol'],
+        price: parseFloat(quote['05. price']),
+        change: parseFloat(quote['09. change']),
+        changePercent: parseFloat(quote['10. change percent']),
+        currency: 'USD',
+    };
+}</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">
+                            Requiere API key gratuita. Límite: 5 req/min, 500 req/día.
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.5. Sincronización Híbrida (Supabase +
+                    Dexie)</h3>
+                <div class="grid grid-cols-1 gap-6 mb-10">
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">dataService.ts - Patrón de Fallback</h4>
+                        <pre><code>export async function getTransactions() {
+    // Prioridad 1: Supabase (si está configurado y hay sesión)
+    if (isSupabaseEnabled() && supabase) {
+        const { data, error } = await supabase
+            .from('transactions')
+            .select('*')
+            .order('date', { ascending: false });
+        
+        if (!error) return data;
+    }
+
+    // Fallback: Dexie (modo offline)
+    return await db.transactions
+        .orderBy('date')
+        .reverse()
+        .toArray();
+}
+
+export async function createTransaction(transaction: Transaction) {
+    // Intentar guardar en Supabase primero
+    if (isSupabaseEnabled() && supabase) {
+        const { data, error } = await supabase
+            .from('transactions')
+            .insert(transaction)
+            .select()
+            .single();
+        
+        if (!error) {
+            // Sincronizar a Dexie como caché local
+            await db.transactions.add(data);
+            return data;
+        }
+    }
+
+    // Si falla o no hay Supabase, guardar solo en Dexie
+    const id = await db.transactions.add(transaction);
+    return { ...transaction, id };
+}</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">
+                            <strong>Estrategia:</strong> Intentar cloud primero, fallback a local. Mantener caché en
+                            Dexie incluso con Supabase activo para acceso rápido.
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">3.6. Internacionalización (i18next)</h3>
+                <div class="grid grid-cols-1 gap-6 mb-10">
+
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-2">i18n.ts - Configuración de Idiomas</h4>
+                        <pre><code>import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import Backend from 'i18next-http-backend';
+
+i18n
+    .use(Backend) // Carga traducciones desde /public/locales/{lng}/translation.json
+    .use(LanguageDetector) // Detecta idioma del navegador
+    .use(initReactI18next)
+    .init({
+        fallbackLng: 'es',
+        supportedLngs: ['es', 'en'],
+        interpolation: {
+            escapeValue: false, // React ya escapa por defecto
+        },
+    });
+
+export default i18n;</code></pre>
+                        <p class="text-sm text-gray-500 mt-2">
+                            <strong>Uso en componentes:</strong>
+                            <code>const { t } = useTranslation(); return &lt;h1&gt;{t('dashboard.title')}&lt;/h1&gt;</code>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-200">
+            <p class="text-sm text-gray-500">&copy; 2026 Arturo Vaquero Serrano. Todos los derechos reservados.</p>
+            <p class="text-xs text-gray-400 mt-2">
+                Proyecto desarrollado con React 19 + TypeScript + Vite | Desplegado en
+                <a href="https://arturocrex.github.io/AppGestionFinanzas/" class="text-blue-600 underline">GitHub
+                    Pages</a>
+            </p>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>
